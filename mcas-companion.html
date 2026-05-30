@@ -235,6 +235,33 @@
   .accbody.src .srch{font-size:16px; color:var(--ink); margin:4px 0 2px}
   .accbody.src h4{font-size:14.5px; color:var(--accent-deep); border-top:1px solid var(--line); padding-top:12px; margin-top:16px}
   .accbody.src .srcnote{background:var(--accent-soft); color:var(--accent-deep); border-radius:9px; padding:10px 12px; font-size:13.5px; line-height:1.5; margin:0 0 6px}
+  .accbody.src .rtitle{font-size:15px; font-weight:700; color:var(--ink); margin:12px 0 2px; line-height:1.35}
+  .accbody.src .rintro{font-size:13px; color:var(--faint); margin:0 0 10px; line-height:1.5}
+  /* tree tools */
+  .treetools{display:flex; gap:8px; margin:0 0 10px}
+  .treetools button{appearance:none; border:1px solid var(--border); background:#fff; color:var(--accent-deep);
+    font:inherit; font-size:12.5px; font-weight:600; padding:6px 11px; border-radius:8px; cursor:pointer}
+  .treetools button:active{transform:translateY(1px)}
+  /* nested collapsible tree */
+  .tree{margin-top:2px}
+  .node{margin:1px 0}
+  .node > summary{cursor:pointer; list-style:none; display:flex; gap:8px; align-items:flex-start;
+    padding:9px 10px; border-radius:9px; font-weight:600; font-size:14px; color:var(--ink); line-height:1.35; transition:background .15s}
+  .node > summary::-webkit-details-marker{display:none}
+  .node > summary:hover{background:var(--surface-2)}
+  .node > summary:active{background:var(--accent-soft)}
+  .node > summary .tw{flex:0 0 auto; color:var(--accent); margin-top:1px; font-size:11px; transition:transform .2s; transform:rotate(0deg)}
+  .node[open] > summary .tw{transform:rotate(90deg)}
+  /* top-level section rows stand out a little */
+  .node.sec{margin:3px 0}
+  .node.sec > summary{font-size:15px; font-weight:700; color:var(--accent-deep)}
+  /* the body of each node: content + any child branches, indented with a guide line */
+  .node .nbody{margin-left:9px; padding-left:11px; border-left:2px solid var(--line)}
+  .node.sec > .nbody{border-left-color:var(--accent-soft)}
+  .nbody > p{margin:7px 4px; font-size:13.5px; color:var(--muted); line-height:1.6}
+  .nbody > ul, .nbody > ol{margin:7px 4px; padding-left:20px; font-size:13.5px; color:var(--muted); line-height:1.55}
+  .nbody > ul li, .nbody > ol li{margin-bottom:6px}
+  .nbody b{color:var(--ink)}
 
   /* ---------- Bottom nav ---------- */
   nav.tabs{
@@ -605,151 +632,345 @@
         </div>
       </details>
 
-      <details class="acc" id="fullSource">
-        <summary>📄 Full source report (complete &amp; unabridged) <svg class="tw" width="16" height="16" viewBox="0 0 16 16"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
+      <details class="acc" id="fullReport">
+        <summary>📄 Full source report (complete, nested) <svg class="tw" width="16" height="16" viewBox="0 0 16 16"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
         <div class="accbody src">
-          <p class="srcnote">Everything above is a simplified, digestible version of this. Below is the complete original text, word-for-word — useful to share with your care team or to read when you want the unfiltered source.</p>
+          <p class="srcnote">Everything above is a simplified version of this. Below is the complete original report — every section is its own collapsible branch, nested like a thread. Tap any heading to open just that branch. Useful to share with your care team.</p>
+          <p class="rtitle">MCAS Survival Playbook: A Practical Guide for the Newly Diagnosed (Oakland / Bay Area Edition)</p>
+          <p class="rintro"><i>Prepared for a friend, on behalf of someone recently diagnosed with Mast Cell Activation Syndrome (MCAS). This is an information resource, not medical advice; every drug, dose, supplement, and strategy here must be vetted by a treating physician who knows the full medical history.</i></p>
+          <div class="treetools"><button onclick="treeToggle('fullReport',true)">⊕ Expand all</button><button onclick="treeToggle('fullReport',false)">⊖ Collapse all</button></div>
 
-          <h3 class="srch">MCAS Survival Playbook — Oakland / Bay Area Edition</h3>
-          <p><i>Information resource, not medical advice — every drug, dose, supplement, and strategy must be vetted by a treating physician.</i></p>
+          <div class="tree">
 
-          <h4>TL;DR</h4>
-          <p>Medication-first, not diet-first. Evidence-based core is cheap and accessible: second-gen H1 antihistamine (cetirizine, fexofenadine, or loratadine), H2 blocker (famotidine), and if needed mast-cell stabilizer (cromolyn or ketotifen) and montelukast — escalated step by step. Carry epinephrine if any anaphylaxis risk. MCAS diagnosis is contested (strict "consensus-1" vs broad "consensus-2"). Biggest practical risks: (a) over-restricting diet into malnutrition/anxiety, (b) expensive cash-pay "MCAS clinics" and supplement funnels.</p>
+            <details class="node sec"><summary><span class="tw">▸</span><span>TL;DR</span></summary><div class="nbody">
+              <ul>
+                <li><b>You can get meaningfully better, and the proven path is medication-first, not diet-first.</b> The evidence-based core is cheap and accessible: a second-generation H1 antihistamine (cetirizine, fexofenadine, or loratadine), an H2 blocker (famotidine), and — if needed — a mast-cell stabilizer (cromolyn or ketotifen) and montelukast, escalated step by step. Most people respond to this ladder. Carry epinephrine if there's any anaphylaxis risk. Everything else is secondary.</li>
+                <li><b>MCAS is a real but genuinely contested diagnosis with two competing criteria sets ("consensus-1" strict vs. "consensus-2" broad), so be a discerning consumer.</b> The biggest practical risks to you are (a) over-restricting your diet into malnutrition and anxiety, and (b) expensive cash-pay "MCAS clinics," supplement funnels, and unproven treatments that prey on desperate patients. Spend money on a good allergist/immunologist before you spend it on supplements or detox protocols.</li>
+                <li><b>In the Bay Area, your best moves are concrete:</b> start with a referral to an allergist/immunologist (Stanford's allergy clinic — including a satellite at 5800 Hollis St in Emeryville, right next to Oakland — has physicians who treat the mast-cell spectrum, e.g., Dr. Meng Chen; UCSF Allergy &amp; Immunology at 400 Parnassus is a reasonable general entry point; Kaiser members should request an internal Allergy/Immunology referral). For complex or refractory cases, national experts (Dr. Cem Akin at Michigan, Dr. Mariana Castells at Brigham &amp; Women's) offer second opinions. Use The Mast Cell Disease Society (TMS) as your trustworthy anchor organization.</li>
+              </ul>
+            </div></details>
 
-          <h4>The Treatment Ladder (escalate step by step)</h4>
-          <ul>
-            <li><b>Tier 1:</b> H1 antihistamines (cetirizine/fexofenadine/loratadine, often 2–4× standard dose under doctor guidance). First-gen (hydroxyzine, diphenhydramine, cyproheptadine) for breakthrough/sleep.</li>
-            <li><b>Tier 2:</b> Add H2 antihistamine (famotidine/Pepcid). Not a substitute for H1 — both together.</li>
-            <li><b>Tier 3:</b> Mast-cell stabilizers. Cromolyn sodium (Gastrocrom, ~200 mg 4×/day before meals &amp; bedtime, may take 2-6 weeks). Ketotifen (~1-2 mg 2×/day, also H1 effect).</li>
-            <li><b>Tier 4:</b> Leukotriene antagonist — montelukast (~10 mg/day). FDA boxed warning for neuropsychiatric effects — report mood changes.</li>
-            <li><b>Tier 5:</b> Low-dose aspirin (81 mg) for prostaglandin-mediated flushing — cautiously, as NSAIDs can themselves trigger.</li>
-            <li><b>Tier 6:</b> Omalizumab (Xolair) injection for refractory disease. ~61% partial response, ~18% complete in 2024 systematic review.</li>
-            <li><b>Tier 7:</b> Corticosteroids — rescue only, never maintenance.</li>
-            <li><b>Always:</b> epinephrine auto-injectors (carry TWO) if any anaphylaxis risk. Written emergency action plan. Anaphylaxis can be biphasic; ER even if symptoms resolve.</li>
-          </ul>
+            <details class="node sec"><summary><span class="tw">▸</span><span>Key Findings</span></summary><div class="nbody">
+              <ol>
+                <li><b>The treatment ladder is well-defined and inexpensive.</b> Standard care escalates in this order: (1) second-generation H1 antihistamine, often dosed above the standard FDA label (up to 2–4×); (2) add an H2 antihistamine (famotidine); (3) add a mast-cell stabilizer (oral cromolyn sodium or ketotifen); (4) add a leukotriene antagonist (montelukast); (5) consider low-dose aspirin for flushing if prostaglandin-mediated and tolerated; (6) the biologic omalizumab (Xolair) for refractory disease; (7) short-course corticosteroids only as rescue; with epinephrine auto-injectors for anaphylaxis throughout. The principle: "if you don't improve on mast-cell-targeted drugs, you probably don't have MCAS."</li>
+                <li><b>Diagnosis is contested, and that matters for how you interpret advice.</b> Two frameworks compete. "Consensus-1" (the AAAAI / European Competence Network–American Initiative criteria) is strict: it requires a documented, event-related rise in serum tryptase (baseline ×1.2, plus 2 ng/mL) during an episode. "Consensus-2" (associated with Dr. Lawrence Afrin and colleagues) is broad, accepting a wide range of symptoms across many organ systems and less specific markers. Studies applying strict criteria to patients referred for "possible MCAS" find fewer than 5% actually meet them — which the two camps interpret oppositely (massive overdiagnosis vs. massive underdiagnosis).</li>
+                <li><b>MCAS is distinct from mastocytosis.</b> Mastocytosis = too many (clonal, abnormal) mast cells that accumulate in tissues, driven usually by the KIT D816V mutation, diagnosed by biopsy. MCAS = a normal <i>number</i> of mast cells that activate and release mediators inappropriately. They can overlap, and a newer entity — hereditary alpha-tryptasemia (HαT), an extra copy of the TPSAB1 gene — raises baseline tryptase and mast-cell reactivity and frequently co-travels with both.</li>
+                <li><b>The "low-histamine diet" helps some people but is the single biggest trap.</b> Evidence is weak (a 2021 review found only 10 studies giving specific food guidance, only one in a mast-cell population), histamine-content food lists are inconsistent, and over-restriction causes real malnutrition, microbiome harm, and psychological distress. Best practice: a short, structured trial (2–4 weeks) followed by systematic reintroduction, ideally with a dietitian — not permanent elimination.</li>
+                <li><b>The "trifecta" is real and worth screening for.</b> MCAS clusters with POTS (a form of dysautonomia) and hypermobile Ehlers-Danlos syndrome / hypermobility spectrum disorder. One large analysis found roughly a third of MCAS patients also carried an hEDS diagnosis. If you have dizziness on standing, a racing heart, or hypermobile joints, raise it with your doctor.</li>
+                <li><b>The "biohacking" supplements have mostly weak, often preclinical evidence.</b> Quercetin and luteolin are the most-studied natural mast-cell stabilizers but rest largely on lab/test-tube and small studies; DAO enzymes, vitamin C, vitamin D, magnesium, omega-3s, NAC, and PEA range from plausible-but-unproven to anecdotal. None replace the medication ladder. Some probiotic strains <i>produce</i> histamine and can make things worse.</li>
+                <li><b>Bay Area specialist access is limited but navigable</b>, with Stanford (including an Emeryville/East Bay satellite), UCSF, and Kaiser as local options and several national experts available for second opinions. There is no dedicated MCAS "center of excellence" in Northern California — Stanford's listed mast-cell center treats biopsy-proven advanced systemic mastocytosis, not the broad MCAS population.</li>
+              </ol>
+            </div></details>
 
-          <h4>Triggers (the "histamine bucket" model — load accumulates from many sources, symptoms appear when it overflows)</h4>
-          <ul>
-            <li><b>Foods:</b> aged/fermented/cured/smoked/leftover foods, alcohol (also inhibits DAO), MSG, artificial dyes, sometimes tomatoes/spinach/eggplant.</li>
-            <li><b>Medications:</b> NSAIDs/aspirin, opioids, some antibiotics, IV contrast dye, certain anesthesia agents. Flag MCAS before any procedure.</li>
-            <li><b>Physical/environmental:</b> temp extremes &amp; changes, sun, exercise, pressure/friction on skin, fragrances, mold.</li>
-            <li><b>Internal:</b> stress, infection, insect venom, hormonal fluctuations.</li>
-          </ul>
+            <details class="node sec"><summary><span class="tw">▸</span><span>1 · What MCAS Is — and Why the Diagnosis Is Contested</span></summary><div class="nbody">
+              <details class="node"><summary><span class="tw">▸</span><span>What MCAS actually is</span></summary><div class="nbody">
+                <p>Mast cells are immune cells that live in connective tissue throughout the body — concentrated in the skin, gut lining, and airways, near blood vessels and nerves. They're the body's "alarm cells": when triggered, they degranulate, releasing a cocktail of mediators (histamine, tryptase, prostaglandins, leukotrienes, cytokines) that produce the familiar features of an allergic reaction. In <b>Mast Cell Activation Syndrome (MCAS)</b>, mast cells are present in normal numbers but are <i>too easily triggered</i> and release mediators inappropriately, producing recurrent, episodic, multi-system symptoms — flushing, hives, itching, abdominal pain, diarrhea, nausea, lightheadedness, palpitations, brain fog, and, at the severe end, anaphylaxis. The Cleveland Clinic frames it simply: MCAS is when mast cells "overreact," sometimes with minor or unknown triggers.</p>
+                <p>A useful mental model from the patient community is the <b>"histamine bucket"</b>: your body is constantly adding to and draining a bucket of histamine/mediator load. Foods, stress, infection, heat, and hormones all add to it; enzymes (like diamine oxidase, DAO) drain it. Symptoms appear when the bucket overflows — which is why a food you tolerate on a calm day floors you during a stressful, hot, sleep-deprived week. This model is a helpful heuristic, though it oversimplifies the biology and isn't a validated clinical framework.</p>
+              </div></details>
+              <details class="node"><summary><span class="tw">▸</span><span>How MCAS differs from mastocytosis and related disorders</span></summary><div class="nbody">
+                <p>This distinction matters because it determines what testing and which specialist you need:</p>
+                <ul>
+                  <li><b>Mastocytosis</b> (cutaneous or systemic) = a clonal disorder where the body produces <i>too many</i> abnormal mast cells that accumulate in organs and tissues. Systemic mastocytosis (SM) is usually driven by the <b>KIT D816V</b> mutation and is diagnosed by tissue/bone-marrow biopsy showing mast-cell clusters. It is genuinely rare (roughly 1 in 10,000 for mastocytosis broadly). SM is typically managed by a hematologist.</li>
+                  <li><b>MCAS</b> = normal <i>number</i> of mast cells that <i>misbehave</i>. A bone-marrow biopsy is typically normal, and there's typically no organ damage. It's diagnosed mostly clinically (with mediator testing) and managed mostly by an allergist/immunologist.</li>
+                  <li><b>Monoclonal MCAS (MMAS)</b> = patients who have some clonal mast-cell features but don't meet full criteria for systemic mastocytosis.</li>
+                  <li><b>Hereditary alpha-tryptasemia (HαT)</b> = an autosomal-dominant extra copy (duplication) of the alpha-tryptase gene <b>TPSAB1</b>, which raises baseline serum tryptase and is associated with more reactive mast cells. It can exist on its own or alongside MCAS/mastocytosis and is increasingly recognized as part of why some people are "hyper-reactive."</li>
+                  <li><b>Secondary MCAS</b> = mast cells activated by an identifiable other condition (e.g., an IgE-mediated allergy); <b>idiopathic MCAS</b> = no identifiable cause.</li>
+                </ul>
+              </div></details>
+              <details class="node"><summary><span class="tw">▸</span><span>The diagnostic controversy you need to understand</span></summary><div class="nbody">
+                <p>MCAS is an evolving and contested diagnosis, and being aware of the debate will make you a smarter patient. Two principal proposals for diagnostic criteria emerged in the early 2010s:</p>
+                <ul>
+                  <li><b>"Consensus-1"</b> (originally published in 2012; aligned with the AAAAI and the ECNM/AIM groups). It is strict and biomarker-anchored. Its three pillars: (1) typical, episodic, mast-cell-mediated symptoms involving <b>two or more organ systems</b>; (2) a documented, <i>event-related</i> rise in serum tryptase of at least <b>20% over the individual's baseline, plus 2 ng/mL</b>, captured within about 4 hours of an episode; and (3) symptom response to mast-cell-targeted drugs. The logic: if mast cells are truly responsible, there should be objective evidence of their involvement.</li>
+                  <li><b>"Consensus-2"</b> (originally 2011; associated with Dr. Lawrence Afrin and a sizable group of clinicians and patients). It is broader and more symptom-driven, accepting that well over 100 chronic or acute symptoms across ~15 organ systems can reflect mast-cell disease, and using a wider, less specific set of markers.</li>
+                </ul>
+                <p>The crux of the disagreement: when researchers apply <b>strict</b> criteria to large groups of patients referred for suspected MCAS, only a small fraction qualify. A Swedish study of 703 consecutive referrals found just <b>4.4% met strict criteria for idiopathic MCAS</b> and another 1.8% for clonal MCAS. The strict camp reads this as evidence of rampant <b>overdiagnosis</b> — symptoms wrongly attributed to a single unifying entity, leading to "unproven and even harmful lapses of judgment." The broad camp reads the same data as evidence of <b>underdiagnosis</b> — that the strict tryptase requirement is impractical (you can't always draw blood within 4 hours; tryptase doesn't always rise in milder events) and leaves suffering patients untreated for years (the Swedish study found average times to diagnosis of 2–4.5 years even among those with clear markers).</p>
+                <p><b>What this means for you practically:</b> A formal diagnosis under one framework may not be accepted under the other. That's not a reason to dismiss your symptoms — they're real and treatable. But it's a strong reason to (a) prefer clinicians who test objectively where possible, (b) treat the <i>response to therapy</i> as the most meaningful signal, and (c) be skeptical of anyone who diagnoses MCAS purely from a long symptom checklist and then sells you an expensive proprietary protocol. The honest current state, per recent allergy literature, is that biomarkers remain limited, identifying better markers is a shared research priority, and both over- and underdiagnosis are recognized problems.</p>
+              </div></details>
+            </div></details>
 
-          <h4>Diet (the biggest trap)</h4>
-          <ul>
-            <li>Low-histamine diet evidence is weak. Over-restriction causes malnutrition, microbiome harm, psychological distress.</li>
-            <li><b>DO:</b> Time-boxed trial 2-4 weeks WITH a dietitian, then systematic reintroduction. Keep diet broad. Fresh foods, eat promptly, freeze leftovers immediately rather than long-fridge.</li>
-            <li><b>DON'T:</b> Permanent severe restriction. Cutting fiber-rich or vitamin-C-rich foods (tomatoes/citrus) is counterproductive.</li>
-          </ul>
+            <details class="node sec"><summary><span class="tw">▸</span><span>2 · The Standard Treatment Ladder (Conventional, Evidence-Based)</span></summary><div class="nbody">
+              <p>This is the heart of conventional management. The unifying principle is a <b>stepwise escalation</b>: start with the cheapest, safest, best-evidenced agents; add the next tier only if symptoms aren't controlled; and judge MCAS partly by whether these drugs actually help. Doses for MCAS are frequently <i>higher</i> than standard allergy labeling, and combinations (an H1 + H2 + stabilizer) are normal, not redundant. <b>None of the following should be started, stopped, or dose-adjusted without your physician</b> — the dosing ranges below are illustrative figures from the published literature, not prescriptions.</p>
+              <details class="node"><summary><span class="tw">▸</span><span>Tier 1 — H1 antihistamines (the foundation)</span></summary><div class="nbody">
+                <p>These block the H1 histamine receptor and target the most recognizable mast-cell symptoms: itching, hives, flushing, and some GI and cardiovascular symptoms.</p>
+                <ul>
+                  <li><b>Second-generation (non-sedating), tried first:</b> cetirizine (Zyrtec), fexofenadine (Allegra), loratadine (Claritin). In MCAS these are often used at <b>2–4× the standard FDA-approved dose</b> under physician guidance. They're preferred because they're non-sedating and very safe.</li>
+                  <li><b>First-generation (sedating):</b> hydroxyzine, diphenhydramine (Benadryl), cyproheptadine. More sedating but useful — cyproheptadine (which also blocks serotonin receptors) is specifically used for diarrhea and nausea; sedating agents can help with sleep or breakthrough symptoms. Caution: anticholinergic side effects, drowsiness, and (especially in older adults) cognitive effects.</li>
+                </ul>
+              </div></details>
+              <details class="node"><summary><span class="tw">▸</span><span>Tier 2 — H2 antihistamines (add, don't substitute)</span></summary><div class="nbody">
+                <p><b>Famotidine</b> (Pepcid) is the mainstay (cimetidine and ranitidine historically; ranitidine was withdrawn in the US). These block H2 receptors — which sit on mast cells themselves and on cardiovascular and GI tissue — so they contribute to overall stabilization and help with abdominal cramps, reflux, and nausea. A key teaching point: famotidine is <b>not</b> "just a stomach drug" interchangeable with a proton-pump inhibitor; in MCAS it's part of the mast-cell regimen and is typically used <i>alongside</i> an H1 blocker, not instead of one.</p>
+              </div></details>
+              <details class="node"><summary><span class="tw">▸</span><span>Tier 3 — Mast-cell stabilizers</span></summary><div class="nbody">
+                <p>These prevent degranulation in the first place rather than blocking the receptor after release.</p>
+                <ul>
+                  <li><b>Cromolyn sodium (cromoglicate / Gastrocrom):</b> poorly absorbed, so it works mainly <i>locally in the gut</i> — especially useful for GI symptoms (bloating, cramping, diarrhea). Illustrative dosing: <b>200 mg four times daily before meals and at bedtime</b>; clinical improvement may take <b>2–6 weeks</b>. Can transiently worsen symptoms when first started, so it's titrated slowly. Available as oral solution, and in nasal, inhaled, eye-drop, and compounded capsule forms.</li>
+                  <li><b>Ketotifen:</b> a "two-in-one" — both a mast-cell stabilizer and an H1 antihistamine — often dosed around <b>1–2 mg twice daily</b>. Popular for broad/systemic symptoms; can be sedating.</li>
+                </ul>
+              </div></details>
+              <details class="node"><summary><span class="tw">▸</span><span>Tier 4 — Leukotriene receptor antagonists</span></summary><div class="nbody">
+                <p><b>Montelukast</b> (Singulair), ~10 mg daily, or zafirlukast — block leukotrienes, helping with respiratory symptoms, wheezing, and some GI cramping. Usually added to (not instead of) antihistamines. <b>Caution:</b> montelukast carries an FDA boxed warning for serious neuropsychiatric effects (mood changes, agitation, rarely suicidal thoughts); report any mood changes promptly.</p>
+              </div></details>
+              <details class="node"><summary><span class="tw">▸</span><span>Tier 5 — Aspirin (selected patients only)</span></summary><div class="nbody">
+                <p>Low-dose <b>aspirin (e.g., 81 mg daily)</b> can help <b>prostaglandin-mediated</b> symptoms, classically flushing, by inhibiting prostaglandin synthesis. <b>Major cautions:</b> aspirin and other NSAIDs are themselves a <i>trigger</i> for some mast-cell patients and can provoke reactions; it's introduced cautiously, often only after confirming tolerance, and is avoided in those with aspirin sensitivity, bleeding risk, or ulcers.</p>
+              </div></details>
+              <details class="node"><summary><span class="tw">▸</span><span>Tier 6 — Biologics for refractory disease</span></summary><div class="nbody">
+                <p><b>Omalizumab (Xolair)</b> is an anti-IgE monoclonal antibody, given by injection every 2–4 weeks. It's <b>not FDA-approved specifically for MCAS</b> (it's approved for allergic asthma, chronic hives, nasal polyps, and food allergy) but is used <b>off-label</b> for refractory MCAS, where it can reduce mast-cell reactivity and anaphylaxis frequency. A 2024 systematic review of refractory MCAS patients found about <b>61% had a partial response and ~18% a complete response</b>, with higher monthly doses (≥300 mg) more likely to produce complete responses and no major adverse events reported across the studies. Dosing in the literature ranged from 150 mg every 4 weeks to 300 mg every 2–3 weeks. The first injections are given in a doctor's office because of a small anaphylaxis risk from the drug itself.</p>
+              </div></details>
+              <details class="node"><summary><span class="tw">▸</span><span>Tier 7 — Corticosteroids (rescue only)</span></summary><div class="nbody">
+                <p>Oral steroids (e.g., prednisone) are reserved as a <b>short-term last resort</b> for severe edema, wheezing, or refractory flares — not for maintenance — because of well-known long-term harms.</p>
+              </div></details>
+              <details class="node"><summary><span class="tw">▸</span><span>Emerging and adjacent therapies</span></summary><div class="nbody">
+                <ul>
+                  <li><b>KIT inhibitors — avapritinib (Ayvakit):</b> a genuine breakthrough, but for <b>mastocytosis, not classic MCAS</b>. It selectively inhibits the KIT D816V mutation that drives systemic mastocytosis. In the placebo-controlled <b>PIONEER trial</b> (NCT03731260), 25 mg once daily significantly reduced symptoms and mast-cell burden in <b>indolent systemic mastocytosis</b>; the FDA approved it for ISM in <b>May 2023</b>, the first disease-modifying therapy for that condition. If your diagnosis is truly MCAS (normal mast-cell numbers, no clonal mutation), avapritinib is <b>not</b> indicated — but it's why getting the mastocytosis-vs-MCAS distinction right matters.</li>
+                  <li><b>BTK inhibitors and other investigational agents:</b> Bruton's tyrosine kinase inhibitors and additional mast-cell-targeted biologics are under investigation; not standard MCAS care, and only for specialist or trial settings.</li>
+                  <li><b>Cytoreductive/KIT-targeted agents generally</b> are reserved for proliferative mast-cell disease (systemic mastocytosis variants) under hematology oversight, not ordinary MCAS.</li>
+                </ul>
+              </div></details>
+              <details class="node"><summary><span class="tw">▸</span><span>Epinephrine — non-negotiable if you're at anaphylaxis risk</span></summary><div class="nbody">
+                <p>Anyone with MCAS who has had anaphylaxis or significant systemic reactions should <b>carry two epinephrine auto-injectors at all times</b> (EpiPen, Auvi-Q, or the newer epinephrine nasal spray) and have a <b>written emergency action plan</b> signed by their physician. Epinephrine — <i>not</i> antihistamines or steroids — is the first-line, life-saving treatment for anaphylaxis. Antihistamines and corticosteroids are slow (1–2 hours and ~6 hours to act, respectively) and do not reverse airway swelling or low blood pressure; they're adjuncts only. A practical caution specific to MCAS: anaphylaxis can be <b>biphasic</b> (return hours later) and, in patients on <b>beta-blockers</b>, can be resistant to epinephrine, sometimes requiring glucagon — worth flagging to your doctor if you take a beta-blocker.</p>
+              </div></details>
+            </div></details>
 
-          <h4>Action Plan Stages</h4>
-          <p><b>Stage 1 (THIS WEEK):</b></p>
-          <ol>
-            <li>Get on (or confirm) foundational regimen with a doctor: 2nd-gen H1 + famotidine. Cheap, safe, diagnostic.</li>
-            <li>Ask about epinephrine auto-injectors. If yes, get TWO + written emergency action plan. Learn anaphylaxis signs.</li>
-            <li>Start simple daily symptom diary (symptoms 1-10, food, sleep, stress, anything new).</li>
-            <li>Curate info sources to TMS (tmsforacure.org) + 1-2 reputable medical sites. Close Facebook doom-scroll groups.</li>
-          </ol>
-          <p><b>Stage 2 (1-3 MONTHS):</b></p>
-          <ol start="5">
-            <li>Build care team hub-and-spoke. Hub: allergist/immunologist. Spokes as needed: hematologist, GI, MCAS-aware dietitian, mental health support, supportive PCP.</li>
-            <li>Work the medication ladder methodically. One change at a time. Fair trials (cromolyn needs 2-6 weeks).</li>
-            <li>If trialing diet: 2-4 weeks, then reintroduce. Don't let it become a shrinking cage.</li>
-            <li>Screen for "trifecta": POTS, hypermobility/hEDS — common co-conditions.</li>
-          </ol>
-          <p><b>Stage 3 (REFRACTORY):</b></p>
-          <ol start="9">
-            <li>Escalate to omalizumab (off-label) with specialist.</li>
-            <li>Second opinion from national expert: Dr. Cem Akin (Michigan), Dr. Mariana Castells (Brigham &amp; Women's).</li>
-            <li>If workup points to clonal/advanced mastocytosis → Dr. Jason Gotlib at Stanford / KIT-targeted therapy (avapritinib).</li>
-          </ol>
+            <details class="node sec"><summary><span class="tw">▸</span><span>3 · Triggers and the Low-Histamine Diet (Without the Over-Restriction Trap)</span></summary><div class="nbody">
+              <details class="node"><summary><span class="tw">▸</span><span>Common triggers</span></summary><div class="nbody">
+                <p>Triggers are anything that pushes mast cells to degranulate, and they're <b>highly individual</b> — what floors one person is tolerated by another, and your own tolerance shifts day to day depending on cumulative load (the "bucket"). Sometimes one trigger is enough; often it's several small ones stacking up. Commonly reported categories:</p>
+                <ul>
+                  <li><b>Foods:</b> aged, fermented, cured, smoked, or leftover foods (aged cheese, wine, sauerkraut, cured meats, canned/aged fish); alcohol (it both releases histamine and inhibits the DAO enzyme that clears it); and additives like MSG, artificial dyes, and certain preservatives. Some also react to "histamine liberators" and high-histamine produce (tomatoes, spinach, eggplant), though evidence that specific foods <i>release</i> histamine in the body is limited.</li>
+                  <li><b>Medications:</b> NSAIDs/aspirin, opioids, some antibiotics, IV contrast dye, and certain anesthesia agents — flag your MCAS before any procedure or new prescription.</li>
+                  <li><b>Physical/environmental:</b> temperature extremes and sudden changes, sunlight, exercise, pressure or friction on skin, strong fragrances and chemicals, and mold.</li>
+                  <li><b>Biological/internal:</b> emotional and physical stress, infections, insect/Hymenoptera venom, and hormonal fluctuations (some women flare cyclically).</li>
+                </ul>
+              </div></details>
+              <details class="node"><summary><span class="tw">▸</span><span>How to identify <i>your</i> triggers</span></summary><div class="nbody">
+                <ol>
+                  <li><b>Keep a structured symptom + exposure diary.</b> Track daily: symptoms and severity (1–10), timing, food, sleep, stress, menstrual cycle phase if relevant, weather/temperature, and any new products or medications. Patterns emerge over weeks that are invisible day to day. (Mast Cell Action, TMS offer log templates.)</li>
+                  <li><b>Get objective testing where possible.</b> Your physician may order serum tryptase (a baseline <i>and</i> a level within ~4 hours of a bad episode to look for the diagnostic rise), 24-hour urine for mast-cell mediators (N-methylhistamine, prostaglandin metabolites, leukotriene E4), and standard allergy testing to rule in/out true IgE allergies.</li>
+                  <li><b>Use elimination strategically, not indefinitely.</b> A <i>time-limited</i> elimination followed by systematic, one-at-a-time reintroduction reveals far more than open-ended avoidance — and protects you from needless restriction.</li>
+                </ol>
+              </div></details>
+              <details class="node"><summary><span class="tw">▸</span><span>The low-histamine diet: what it is, the evidence, and the danger</span></summary><div class="nbody">
+                <p>A low-histamine diet emphasizes fresh, quickly-cooked foods and minimizes aged/fermented/cured/leftover foods. Cooking method matters: boiling, steaming, or pressure-cooking tends to keep histamine low (less time for histamine-producing bacteria), whereas long storage raises it. Buying fresh and eating promptly (or freezing leftovers immediately rather than refrigerating for days) is one of the more defensible, low-cost food strategies.</p>
+                <p><b>But the evidence base is thin and the over-restriction risk is serious — this is worth being blunt about.</b> A 2021 literature review found only 10 studies offering specific food guidance for histamine intolerance, and just one examining restrictive low-histamine diets in a mast-cell condition. Histamine-content food lists are inconsistent and vary with freshness and storage, so different lists contradict each other and patients routinely end up far more restricted than necessary. Clinicians warn directly that "too many patients end up on impossibly limited diets that cause malnutrition and psychological distress without meaningfully better symptom control," and that cutting fiber-rich foods can <i>harm</i> the gut microbiome — potentially worsening histamine handling. Restricting vitamin-C-rich foods (tomatoes, citrus) is doubly counterproductive since vitamin C supports histamine breakdown.</p>
+                <p><b>The balanced approach</b> most dietitians recommend: trial a low-histamine pattern for <b>2–4 weeks</b> (a registered dietitian familiar with MCAS can structure this and provide an "exit plan"); if there's no clear benefit in that window, it's probably not worth continuing; if there is benefit, <b>reintroduce foods systematically</b> to find your personal ceiling and keep your diet as broad and nourishing as possible. The long-term goal is to <i>expand</i>, not shrink, what you can eat. Treat permanent, severe self-imposed restriction as a red flag, not a badge of diligence.</p>
+              </div></details>
+            </div></details>
 
-          <h4>Bay Area Specialists</h4>
-          <ul>
-            <li><b>Stanford Allergy/Immunology</b> — East Bay satellite, 5800 Hollis St, 3rd Fl, Emeryville, CA 94608. Phone 510-806-2100. Dr. Meng Chen authored "Mast cell disorders: Protean manifestations and treatment responses." Most convenient academic option.</li>
-            <li><b>UCSF Allergy &amp; Immunology</b>, 400 Parnassus Ave, 2nd Fl, SF. ~415-353-2961 / 415-353-2725. Strong general option but no faculty publicly lists MCAS as a specialty. Dr. Michele Pham directs Adult Clinical Immunology. UCSF does NOT offer IgG "food sensitivity" testing (mark of a quality clinic — those tests aren't validated).</li>
-            <li><b>Kaiser NorCal</b> — no dedicated MCAS center but Allergy/Immunology depts handle workups. Ask PCP for internal Allergy/Immunology referral and ask provider's mast-cell experience.</li>
-            <li><b>Stanford Cancer Ctr</b> — Dr. Jason Gotlib, 875 Blake Wilbur Dr, 650-498-6000. Treats ONLY biopsy-proven advanced systemic mastocytosis, not general MCAS.</li>
-          </ul>
+            <details class="node sec"><summary><span class="tw">▸</span><span>4 · The "Overwhelmed, Just Diagnosed" Action Plan</span></summary><div class="nbody">
+              <p>If your friend is overwhelmed, the single most useful thing you can do is give them a <i>sequence</i> — a short, ordered list of what to do this week, this month, and over the next few months — so they're not trying to do everything (and buy everything) at once.</p>
+              <details class="node"><summary><span class="tw">▸</span><span>The first two weeks</span></summary><div class="nbody">
+                <ol>
+                  <li><b>Start (or confirm) the basics with a doctor.</b> The fastest path to feeling better is the medication ladder, not a supplement haul or a restrictive diet. The goal is to get on a second-generation H1 antihistamine and famotidine and see how much that alone helps. Cheap, safe, and diagnostic.</li>
+                  <li><b>Establish the emergency baseline.</b> Ask whether epinephrine auto-injectors are warranted given the symptom history; if so, get two and a written emergency action plan. Learn the signs of anaphylaxis. This removes a huge amount of background fear.</li>
+                  <li><b>Start a simple symptom diary.</b> Not an obsessive spreadsheet — a quick daily note (symptoms 1–10, food, sleep, stress, anything new). Two to four weeks of this is worth more than any single test for finding patterns.</li>
+                  <li><b>Pick your anchor information sources and close the rest.</b> Bookmark TMS (tmsforacure.org), the Cleveland Clinic / Allergy &amp; Asthma Network MCAS pages, and one good clinical review. Then <i>stop</i> doom-scrolling Facebook groups for medical advice. The information environment in MCAS is noisy and frightening; curating it is self-care.</li>
+                </ol>
+              </div></details>
+              <details class="node"><summary><span class="tw">▸</span><span>The first one to three months</span></summary><div class="nbody">
+                <ol start="5">
+                  <li><b>Build your care team, hub-and-spoke.</b> The hub is an <b>allergist/immunologist</b>. Spokes, as needed: a <b>hematologist</b> (if mastocytosis/clonal disease needs ruling out), <b>gastroenterology</b> (GI-dominant symptoms), a <b>registered dietitian</b> familiar with MCAS, and <b>mental-health support</b>. A supportive primary-care physician coordinates referrals.</li>
+                  <li><b>Work the ladder methodically with your doctor.</b> Give each step a fair trial (some, like cromolyn, take 2–6 weeks) before adding the next. Change <b>one thing at a time</b> so you can tell what's working.</li>
+                  <li><b>If you trial diet, time-box it.</b> 2–4 weeks, then reintroduce. Don't let it become a permanent shrinking cage.</li>
+                </ol>
+              </div></details>
+              <details class="node"><summary><span class="tw">▸</span><span>Daily life, work, and social situations</span></summary><div class="nbody">
+                <ul>
+                  <li><b>Eating out:</b> call ahead or check menus, favor simple freshly-cooked dishes (grilled protein + plain vegetables + a tolerated starch), skip aged cheese/cured meats/wine if those are triggers, and carry your own "safe" snacks. You don't have to explain your whole diagnosis — "I have a medical condition, I need this prepared simply" is enough.</li>
+                  <li><b>Work:</b> you may be entitled to reasonable accommodations (fragrance-free considerations, flexibility during flares, somewhere to rest). Decide deliberately how much to disclose; a doctor's note framing it as a medical condition usually suffices.</li>
+                  <li><b>Social life:</b> flares are unpredictable and that's isolating. Tell a few trusted people what anaphylaxis looks like and where your epinephrine is. Protecting social connection is part of the treatment, not a distraction from it.</li>
+                </ul>
+              </div></details>
+              <details class="node"><summary><span class="tw">▸</span><span>The emotional and mental-health dimension — don't skip this</span></summary><div class="nbody">
+                <p>A chronic, contested, multi-system illness that doctors sometimes don't recognize is genuinely hard on mental health, and anxiety itself is a documented mast-cell trigger — a vicious loop. Naming this is important: getting support (therapy, peer community, stress-reduction practices) is a legitimate, possibly even physiologically relevant, part of management, not an admission that "it's all in your head."</p>
+              </div></details>
+              <details class="node"><summary><span class="tw">▸</span><span>Pacing, and avoiding the obsession trap</span></summary><div class="nbody">
+                <p>The biggest self-inflicted harm in MCAS isn't the disease — it's the spiral into ever-tighter restriction, ever-more supplements, and ever-more expensive interventions, driven by fear. Resist it. Change one variable at a time. Keep your diet as wide as you safely can. Set a budget. And <b>define wins</b>: early wins look like <i>fewer or milder flares</i>, <i>sleeping through the night</i>, <i>tolerating one more food</i>, <i>getting through a workday</i>, <i>less daily fear</i> — not a magical cure. MCAS is usually a condition you <i>manage well</i>, not one you eliminate; most patients, once on an effective regimen, significantly reduce how often and how severely symptoms occur.</p>
+              </div></details>
+            </div></details>
 
-          <h4>National Experts for Second Opinions</h4>
-          <ul>
-            <li><b>Dr. Cem Akin</b> — University of Michigan, Ann Arbor. ~734-232-2071.</li>
-            <li><b>Dr. Mariana Castells</b> — Brigham &amp; Women's / Harvard, Boston. 617-732-9850. One of few academic centers explicitly taking the broad MCAS population.</li>
-            <li><b>Dr. Lawrence Afrin</b> — AIM Center, Armonk NY (telehealth). "Consensus-2" co-author. CASH-PAY private practice — doesn't bill insurance, initial consults in multi-thousand-dollar range. Mixed reviews. Enter with eyes open.</li>
-          </ul>
+            <details class="node sec"><summary><span class="tw">▸</span><span>5 · Finding MCAS-Literate Specialists in / near Oakland</span></summary><div class="nbody">
+              <p>Finding an MCAS-literate clinician in Northern California is harder than it should be — there is <b>no dedicated MCAS "center of excellence" in the Bay Area</b>. The major academic mast-cell program at Stanford focuses on biopsy-proven <i>systemic mastocytosis</i>, not the broad MCAS population. But there are realistic local options plus strong national experts for second opinions.</p>
+              <details class="node"><summary><span class="tw">▸</span><span>Local options (most → least convenient for Oakland)</span></summary><div class="nbody">
+                <ul>
+                  <li><b>Stanford Health Care — Allergy, Asthma &amp; Immunodeficiency Clinic (East Bay satellite).</b> <b>5800 Hollis Street, 3rd Floor, Emeryville, CA 94608 (phone 510-806-2100)</b> — immediately adjacent to Oakland and the most geographically convenient academic allergy access point in the East Bay. Faculty includes <b>Dr. Meng Chen, MD</b>, a double board-certified allergist/immunologist who authored <i>"Mast cell disorders: Protean manifestations and treatment responses"</i> and has clinical expertise in chronic urticaria, angioedema, and drug allergy — the most appropriate local academic allergist for the mast-cell spectrum. Confirm which physicians staff the Emeryville location when booking; the main Stanford allergy clinic is in Palo Alto.</li>
+                  <li><b>UCSF Health — Allergy &amp; Immunology Clinic, 400 Parnassus Ave, 2nd Floor, San Francisco (~415-353-2961 / clinic line 415-353-2725).</b> Treats anaphylaxis, food allergy, drug allergy (including desensitization), and chronic hives, and can run the mediator workup. <b>Honest caveat:</b> no UCSF allergy faculty page explicitly lists MCAS or mastocytosis as a specialty. <b>Dr. Michele Pham, MD</b> directs Adult Clinical Immunology and is a reasonable, well-credentialed entry point, but UCSF is a strong <i>general</i> option rather than a dedicated mast-cell center. (UCSF, like the AAAAI, does <b>not</b> offer IgG "food sensitivity" testing — appropriately, since it's not validated. That's a marker of a quality clinic.)</li>
+                  <li><b>Kaiser Permanente Northern California.</b> No published Kaiser MCAS center, but Kaiser's Allergy/Immunology departments (Oakland, San Francisco, Walnut Creek, etc.) handle allergy, anaphylaxis, and urticaria, can order tryptase testing, and can refer internally to hematology if clonal disease is suspected. The move: ask the Kaiser PCP for an <b>internal Allergy/Immunology referral</b> and specifically ask about the provider's mast-cell-disorder experience. Complex/refractory cases sometimes need out-of-network referral.</li>
+                  <li><b>Stanford Cancer Center — Dr. Jason Gotlib, MD (875 Blake Wilbur Drive, Stanford; 650-498-6000).</b> A world authority on mast-cell disease and president of AIM. <b>Important caveat:</b> per the TMS listing, he treats <b>adults with biopsy-proven, advanced variants of systemic mastocytosis only</b> (smoldering SM, SM-AHN, aggressive SM, mast-cell leukemia) — <i>not</i> the general MCAS population. Relevant only if a workup points toward clonal/advanced mastocytosis.</li>
+                </ul>
+              </div></details>
+              <details class="node"><summary><span class="tw">▸</span><span>National experts for second opinions / telehealth</span></summary><div class="nbody">
+                <p>For complex, refractory, or diagnostically murky cases (referral requirements and insurance vary; confirm telehealth availability and California licensing):</p>
+                <ul>
+                  <li><b>Dr. Cem Akin, MD, PhD — University of Michigan, Ann Arbor.</b> Among the foremost US experts on <i>both</i> mastocytosis and MCAS; the Michigan MPN &amp; Systemic Mastocytosis Clinic (new-patient coordinator ~734-232-2071).</li>
+                  <li><b>Dr. Mariana Castells, MD, PhD — Brigham &amp; Women's Hospital / Harvard, Boston.</b> Directs the Center of Excellence for Mastocytosis, which per TMS treats <b>"all mastocytosis and MCAS"</b> (one of the few academic centers explicitly taking the broad MCAS population); 617-732-9850.</li>
+                  <li><b>NIH/NIAID, Bethesda (Dr. Dean Metcalfe, Dr. Melody Carter):</b> research/referral center — physician referral only, and only for cutaneous mastocytosis, biopsy-proven SM, and adult idiopathic anaphylaxis (not general MCAS).</li>
+                  <li><b>Dr. Lawrence Afrin, MD — AIM Center for Personalized Medicine, Armonk, NY</b> (telehealth available). The best-known MCAS-focused private practice and a co-author of the "consensus-2" criteria — the go-to for patients who don't fit strict mastocytosis criteria. <b>Significant caveats:</b> a cash-pay private practice that does <b>not bill insurance</b> (patients pay out of pocket and seek reimbursement themselves; initial consultations reported in the multi-thousand-dollar range), and patient reviews are mixed. Useful as a specialized option, but exactly the kind of high-cost engagement to enter with eyes open.</li>
+                </ul>
+              </div></details>
+              <details class="node"><summary><span class="tw">▸</span><span>How to actually find and vet a provider</span></summary><div class="nbody">
+                <ul>
+                  <li><b>Use The Mast Cell Disease Society (TMS) — tmsforacure.org.</b> The trustworthy anchor. Use its <b>"Find a Physician"</b> page and support communities (where physician recommendations are <i>patient-generated</i>, not TMS endorsements). The best referrals often come from its member network; each listed center has its own criteria — some only see biopsy-confirmed systemic mastocytosis.</li>
+                  <li><b>Check AIM (aimcd.net)</b> for its current Centers of Excellence / Reference Centers (filter "US West"). AIM/ECNM-affiliated centers skew heavily toward biopsy-proven mastocytosis.</li>
+                  <li><b>Use the AAAAI "Find an Allergist"</b> directory (allergist.aaaai.org) to confirm board certification.</li>
+                  <li><b>Vetting questions when you call/visit:</b> How many mast-cell patients do you treat? Do you treat MCAS or only biopsy-proven mastocytosis? Do you follow the consensus criteria and use objective mediator testing? Will you coordinate with my other doctors? A good clinic answers readily; a predatory one pivots to selling a proprietary package.</li>
+                </ul>
+              </div></details>
+            </div></details>
 
-          <h4>Supplements — honest grading</h4>
-          <ul>
-            <li><b>Plausible/most-studied (preclinical/small-study):</b> Quercetin (~500-1000 mg/day, phytosome form for absorption, 12-14 wk safety studies). Luteolin (~100-400 mg/day, low bioavailability).</li>
-            <li><b>Dietary histamine targeted:</b> DAO enzyme before meals (limited human efficacy data). Vitamin C 1000-2000 mg/day (supports histamine breakdown).</li>
-            <li><b>Supportive:</b> Vitamin D (correct documented deficiency), magnesium glycinate, omega-3s.</li>
-            <li><b>Speculative:</b> NAC, PEA (preclinical only).</li>
-            <li><b>CAUTION — Probiotics:</b> some strains produce histamine and worsen symptoms. AVOID L. casei, L. plantarum, L. reuteri, L. bulgaricus. Favor Bifidobacterium strains.</li>
-            <li>None replaces the medication ladder. Manage expectations. The community combo "quercetin + vitamin C + DAO before high-histamine meals" is popular and low-risk for most.</li>
-          </ul>
+            <details class="node sec"><summary><span class="tw">▸</span><span>6 · The Biohacking / Self-Experimentation Angle (Honestly Graded)</span></summary><div class="nbody">
+              <p><b>The overriding rules:</b> (1) supplements are <i>adjuncts</i>, never replacements for the medication ladder; (2) change <b>one variable at a time</b> and give it a fair, time-boxed trial; (3) loop in your physician/pharmacist — "natural" does not mean "no interactions"; and (4) supplements are loosely regulated, so quality and purity vary, and fillers/additives can themselves trigger reactions.</p>
+              <details class="node"><summary><span class="tw">▸</span><span>Supplements: what has evidence vs. what's anecdotal</span></summary><div class="nbody">
+                <details class="node"><summary><span class="tw">▸</span><span>Plausible, most-studied (but mostly preclinical/small-study)</span></summary><div class="nbody">
+                  <ul>
+                    <li><b>Quercetin</b> — the most-studied natural mast-cell stabilizer. In lab studies it inhibited mast-cell mediator release (some found it more potent than cromolyn <i>in vitro</i>), and a few small human pilots are encouraging, but rigorous MCAS trials are lacking. Common doses: 500–1,000 mg/day, often a phytosome/liposomal form for absorption; safety studies ran 12–14 weeks, so long-term safety is unknown.</li>
+                    <li><b>Luteolin</b> — a related flavonoid (studied by Dr. Theoharis Theoharides for mast-cell and neuro-inflammatory effects). Evidence largely test-tube and small studies; bioavailability is low. Cited doses ~100–400 mg/day. (Theoharides' formulations, e.g., NeuroProtek, are community-popular — note his commercial interest.)</li>
+                  </ul>
+                </div></details>
+                <details class="node"><summary><span class="tw">▸</span><span>Targeted at dietary histamine</span></summary><div class="nbody">
+                  <ul>
+                    <li><b>DAO (diamine oxidase) enzyme</b> — supplements (usually porcine-kidney-derived) taken <i>before meals</i> to help break down food histamine in the gut. Reasonable rationale for people whose problem is partly dietary histamine; human efficacy data are limited. Blood DAO tests don't reliably reflect gut function.</li>
+                    <li><b>Vitamin C</b> — supports histamine breakdown and may aid DAO; ~1,000–2,000 mg/day, but &gt;1,000 mg can cause GI upset/diarrhea (buffered forms are gentler). Cheap, low-risk, modest rationale.</li>
+                  </ul>
+                </div></details>
+                <details class="node"><summary><span class="tw">▸</span><span>General supportive (broadly safe; weak MCAS-specific evidence)</span></summary><div class="nbody">
+                  <p><b>Vitamin D</b> (correct a documented deficiency), <b>magnesium</b> (a DAO cofactor; glycinate is well-tolerated), <b>omega-3 fatty acids</b> (anti-inflammatory). Reasonable general health measures; not MCAS cures.</p>
+                </div></details>
+                <details class="node"><summary><span class="tw">▸</span><span>More speculative / anecdotal</span></summary><div class="nbody">
+                  <ul>
+                    <li><b>N-acetylcysteine (NAC)</b> — antioxidant/anti-inflammatory rationale, but no solid MCAS evidence.</li>
+                    <li><b>Palmitoylethanolamide (PEA)</b> — an endocannabinoid-like fatty acid that down-modulates mast-cell degranulation in animal and cell studies. Mechanistically interesting and generally well-tolerated, but <b>insufficient clinical evidence to recommend a specific dose for MCAS</b> — it remains preclinical/early.</li>
+                  </ul>
+                </div></details>
+                <details class="node"><summary><span class="tw">▸</span><span>Probiotics — proceed with caution</span></summary><div class="nbody">
+                  <p>The one category with a real catch: <b>some bacterial strains <i>produce</i> histamine</b> and can worsen symptoms. Guidance is to <i>avoid</i> histamine-producing strains (commonly cited: <i>Lactobacillus casei</i>, <i>L. plantarum</i>, <i>L. reuteri</i>, <i>L. bulgaricus</i>) and favor strains described as histamine-neutral or -degrading (various <i>Bifidobacterium</i> strains). Evidence is preliminary; if you try one, treat it as a single-variable experiment.</p>
+                </div></details>
+                <p><b>The honest bottom line:</b> quercetin, luteolin, DAO, and vitamin C have the most mechanistic and community support but thin human-trial evidence; the rest are largely supportive or speculative. None substitutes for antihistamines/stabilizers. The community combination "quercetin + vitamin C + DAO" is popular and low-risk for most people, but manage expectations.</p>
+              </div></details>
+              <details class="node"><summary><span class="tw">▸</span><span>Lifestyle / "biohacking" approaches</span></summary><div class="nbody">
+                <ul>
+                  <li><b>Nervous-system regulation and vagal tone.</b> There's a genuine, bidirectional stress–mast-cell connection, so stress-reduction, good sleep, breathing practices, and gentle activity are legitimate, low-risk. <b>However</b>, be clear-eyed about heavily marketed "limbic retraining" programs (DNRS, Gupta Program, Primal Trust, "polyvagal" protocols, Safe and Sound Protocol). Some users report benefit, but rigorous evidence specific to MCAS is weak-to-absent, and some practitioners overstate the case. Cheap, general nervous-system care is well worth doing; paid proprietary "brain retraining" courses are optional, unproven experiments with a budget cap — not cures. Be especially wary of chiropractic claims to "fix" MCAS via the vagus nerve.</li>
+                  <li><b>Sleep optimization</b> — high-value, no-downside; poor sleep raises the "bucket" load.</li>
+                  <li><b>Gut health</b> — plausibly relevant; supporting microbiome diversity is reasonable, but beware over-restrictive diets that paradoxically <i>harm</i> the microbiome.</li>
+                  <li><b>Mold/home environment</b> — reducing genuine indoor mold/damp exposure is sensible. <b>But</b> "mold illness/CIRS" and elaborate, expensive "mold detox" protocols are a major hotspot for unproven, costly interventions — fix real, visible/measured mold; be skeptical of practitioners who attribute everything to mold.</li>
+                  <li><b>Addressing the "trifecta" comorbidities</b> — if POTS, hEDS/hypermobility, or dysautonomia are present, managing them (salt/fluids and compression for POTS; PT and joint protection for hypermobility) can reduce overall symptom burden. Worth formally evaluating rather than self-diagnosing.</li>
+                </ul>
+                <p>The disciplined way to self-experiment: pick <b>one</b> intervention, define what success looks like, run it for a set period while logging symptoms, keep your doctor informed, and drop it if it doesn't clearly help.</p>
+              </div></details>
+            </div></details>
 
-          <h4>Lifestyle</h4>
-          <ul>
-            <li><b>Nervous-system regulation:</b> stress is a real trigger, vagal/breathing/sleep practices are legit. BUT paid programs like DNRS, Gupta, Primal Trust, Safe and Sound Protocol have weak-to-absent rigorous MCAS evidence. Cheap general practices = good. Pricey "brain retraining" = optional, experimental, budget-cap.</li>
-            <li><b>Sleep optimization:</b> high-value, no-downside.</li>
-            <li><b>Gut health:</b> support microbiome diversity. Beware over-restrictive diets that harm it.</li>
-            <li><b>Mold/environment:</b> fix real visible/measured mold problems. Be skeptical of expensive "mold detox" protocols and CIRS practitioners attributing everything to mold.</li>
-            <li>Address "trifecta" comorbidities if present (POTS: salt/fluids/compression; hEDS: PT, joint protection).</li>
-          </ul>
+            <details class="node sec"><summary><span class="tw">▸</span><span>7 · Red Flags and Safety</span></summary><div class="nbody">
+              <details class="node"><summary><span class="tw">▸</span><span>Anaphylaxis — know it, and act fast</span></summary><div class="nbody">
+                <p>Anaphylaxis is a life-threatening, rapid-onset systemic reaction and the most serious risk in MCAS. <b>Recognize it</b> by sudden symptoms across multiple body systems:</p>
+                <ul>
+                  <li><b>Skin:</b> widespread hives, flushing, swelling of face/lips/tongue</li>
+                  <li><b>Breathing:</b> throat tightness, hoarse voice, trouble swallowing, wheezing, repeated coughing, shortness of breath</li>
+                  <li><b>Heart/circulation:</b> dizziness, faintness, weak/rapid pulse, pale or bluish skin, collapse</li>
+                  <li><b>Gut:</b> repetitive vomiting, severe cramping, diarrhea</li>
+                  <li><b>Other:</b> sudden anxiety or a "sense of impending doom"</li>
+                </ul>
+                <p><b>What to do (the action plan):</b></p>
+                <ol>
+                  <li><b>Give epinephrine immediately</b> — intramuscular, into the mid-outer thigh — at the first sign of a known or suspected anaphylactic reaction. Do not wait, and do not substitute antihistamines or an inhaler. Delay is the main driver of bad outcomes.</li>
+                  <li><b>Call 911</b> and say it's anaphylaxis.</li>
+                  <li><b>Lie flat with legs raised</b> (or position of comfort if breathing is hard).</li>
+                  <li><b>Give a second epinephrine dose</b> as early as 5 minutes later if there's no improvement.</li>
+                  <li><b>Go to the ER even if symptoms resolve</b> — reactions can be <b>biphasic</b> and return hours later; observation (typically ~4–6+ hours) is warranted.</li>
+                </ol>
+                <p>Carry <b>two</b> auto-injectors at all times, check expiration dates (an expired injector is still better than none in a true emergency), keep them at room temperature, and make sure the people around you know where they are and how to use them. A <b>written, physician-signed emergency action plan</b> makes all of this faster under stress. Consider a medical-ID bracelet.</p>
+              </div></details>
+              <details class="node"><summary><span class="tw">▸</span><span>Other red flags warranting urgent evaluation</span></summary><div class="nbody">
+                <p>Beyond classic anaphylaxis: rapidly worsening or unrelenting symptoms, fainting/near-fainting, chest pain, severe or persistent vomiting/diarrhea with dehydration, or any reaction that's clearly escalating. When in doubt with breathing or circulation involvement, treat it as anaphylaxis and use epinephrine.</p>
+              </div></details>
+              <details class="node"><summary><span class="tw">▸</span><span>Non-emergency safety issues that still cause real harm</span></summary><div class="nbody">
+                <ul>
+                  <li><b>Dietary over-restriction → malnutrition.</b> Severe, prolonged self-imposed elimination diets cause nutrient deficiencies, weight loss, microbiome harm, and disordered-eating patterns — sometimes more disabling than the MCAS itself. Involve a dietitian; keep the diet as broad as safely possible.</li>
+                  <li><b>Supplement interactions and quality.</b> "Natural" isn't risk-free. High-dose vitamin C causes GI upset; quercetin and other flavonoids can interact with medications and affect drug-metabolizing enzymes; histamine-producing probiotic strains can backfire; loosely regulated supplements vary in purity. Review every supplement with your physician or pharmacist.</li>
+                  <li><b>Procedures, surgery, and new drugs.</b> Tell every provider (including dentists, anesthesiologists, radiologists) about your MCAS <i>before</i> procedures — contrast dye, certain anesthetics, opioids, and NSAIDs are known triggers and may require premedication.</li>
+                </ul>
+              </div></details>
+            </div></details>
 
-          <h4>Red Flags — anaphylaxis recognition (ACT FAST)</h4>
-          <ul>
-            <li><b>Skin:</b> widespread hives, flushing, face/lip/tongue swelling.</li>
-            <li><b>Breathing:</b> throat tightness, hoarse voice, wheezing, shortness of breath.</li>
-            <li><b>Heart:</b> dizziness, faintness, weak/rapid pulse, pale/bluish skin, collapse.</li>
-            <li><b>Gut:</b> repetitive vomiting, severe cramping, diarrhea.</li>
-            <li><b>Other:</b> sudden anxiety or "sense of impending doom."</li>
-          </ul>
-          <p><b>What to do:</b></p>
-          <ol>
-            <li>Give epinephrine immediately — IM into mid-outer thigh. Don't wait. Don't substitute antihistamines.</li>
-            <li>Call 911, say "anaphylaxis."</li>
-            <li>Lie flat with legs raised (or comfort position if breathing hard).</li>
-            <li>Second epinephrine dose as early as 5 min later if no improvement.</li>
-            <li>ER even if symptoms resolve — biphasic reactions possible. Observation 4-6+ hours.</li>
-          </ol>
-          <p>Carry two auto-injectors always. Room temp. Make people around you know where they are.</p>
+            <details class="node sec"><summary><span class="tw">▸</span><span>8 · Resources, Community, and Avoiding Exploitation</span></summary><div class="nbody">
+              <details class="node"><summary><span class="tw">▸</span><span>Trustworthy organizations and information</span></summary><div class="nbody">
+                <ul>
+                  <li><b>The Mast Cell Disease Society (TMS) — tmsforacure.org.</b> The leading US nonprofit for mast-cell diseases (founded 1995; works with the AAAAI mast-cell committee). Best single anchor for education, physician-finder, support communities, and conferences. Covers mastocytosis, MCAS, and HαT.</li>
+                  <li><b>American Initiative in Mast Cell Diseases (AIM) — aimcd.net.</b> The Pan-American academic/clinical network (launched at Stanford in 2019); lists Centers of Excellence and reflects mainstream expert consensus.</li>
+                  <li><b>Allergy &amp; Asthma Network (allergyasthmanetwork.org)</b> and <b>Cleveland Clinic / Mayo Clinic</b> patient pages — solid, plain-language, medically-reviewed overviews.</li>
+                  <li><b>Mast Cell Action (mastcellaction.org)</b> — a UK patient charity with practical, generally balanced guides (notably candid about over-restriction).</li>
+                  <li><b>Immune Deficiency Foundation</b> and <b>NORD (rarediseases.org)</b> — reputable background.</li>
+                  <li><b>Primary literature:</b> PubMed (search "mast cell activation syndrome"); for the diagnostic debate, the <i>Journal of Allergy &amp; Clinical Immunology: In Practice</i> pieces on over- vs. underdiagnosis and the "consensus-2" paper give both sides.</li>
+                </ul>
+              </div></details>
+              <details class="node"><summary><span class="tw">▸</span><span>Books</span></summary><div class="nbody">
+                <p><b>"Never Bet Against Occam" by Dr. Lawrence Afrin</b> — the best-known lay/clinician MCAS book. Genuinely useful for understanding the broad "consensus-2" view and the breadth of presentations, and validating for patients who felt dismissed. <b>Read it with the context that it represents the broad-criteria school</b>, which the strict-criteria academic camp considers prone to overdiagnosis — so balance it with mainstream sources (TMS, AAAAI, Cleveland Clinic).</p>
+              </div></details>
+              <details class="node"><summary><span class="tw">▸</span><span>Community — useful, with a caution</span></summary><div class="nbody">
+                <p>Online communities (TMS forums, established Facebook groups, the r/MCAS subreddit) provide emotional support, practical tips, and provider leads hard to find elsewhere — and TMS notes peer referrals are often the best way to find clinicians. <b>But</b> community physician recommendations are patient-generated (not vetted endorsements), and groups can amplify the most restrictive diets, the scariest anecdotes, and the most expensive interventions. Use them for solidarity and logistics; take medical decisions back to your clinician.</p>
+              </div></details>
+              <details class="node"><summary><span class="tw">▸</span><span>Avoiding misinformation and predatory operators — read this carefully</span></summary><div class="nbody">
+                <p>MCAS sits at the intersection of a real, under-served patient population and a poorly-policed wellness marketplace, which makes it a prime target for exploitation. Patterns to watch for:</p>
+                <ul>
+                  <li><b>Reliance on testimonials over data.</b> Dramatic patient stories, before/after claims, and influencer endorsements instead of published evidence — a classic red flag.</li>
+                  <li><b>One-cause-explains-everything narratives</b> — that all your symptoms trace to mold/CIRS, "leaky gut," chronic Lyme, heavy metals, or trauma, <i>and</i> that an expensive proprietary protocol fixes it. Be skeptical of any practice selling a single branded "MCAS protocol," large supplement bundles (especially private-label), unvalidated tests (IgG "food sensitivity" panels, which major allergy bodies advise against), or pricey "detox"/stem-cell/ozone/IV packages.</li>
+                  <li><b>Cash-only, insurance-avoidant, high-upfront-cost models</b> with very expensive initial consults. (Even legitimate expert practices can be costly and out-of-network — go in with a budget and clear expectations.)</li>
+                  <li><b>Discouraging conventional care</b> or framing proven antihistamines/stabilizers as inferior to their natural protocol.</li>
+                </ul>
+                <p><b>The protective heuristic:</b> spend on a qualified, board-certified allergist/immunologist and the evidence-based ladder <i>first</i>; treat everything else as optional experiments with a budget cap; and be most skeptical exactly when you're most desperate, because that's when these operations are most effective.</p>
+              </div></details>
+            </div></details>
 
-          <h4>Avoiding Predatory Operators — red flags</h4>
-          <ul>
-            <li>Testimonials over data.</li>
-            <li>One-cause-explains-everything ("it's all mold/CIRS/Lyme/trauma").</li>
-            <li>Branded "MCAS protocol" supplement bundles.</li>
-            <li>Unvalidated tests (IgG "food sensitivity" panels).</li>
-            <li>Cash-only, insurance-avoidant, high-upfront-cost models.</li>
-            <li>Discouraging conventional care.</li>
-            <li>Be MOST skeptical when MOST desperate — that's when these operations work.</li>
-          </ul>
+            <details class="node sec"><summary><span class="tw">▸</span><span>Recommendations</span></summary><div class="nbody">
+              <details class="node"><summary><span class="tw">▸</span><span>Stage 1 — This week (highest leverage, lowest cost/risk)</span></summary><div class="nbody">
+                <ol>
+                  <li>Get on (or confirm) the foundational regimen with a physician: a second-generation H1 antihistamine + famotidine. The fastest, cheapest, safest path to relief — and itself diagnostic.</li>
+                  <li>Ask whether epinephrine auto-injectors are warranted; if yes, obtain two and a written emergency action plan, and learn the signs of anaphylaxis.</li>
+                  <li>Start a simple daily symptom/exposure diary.</li>
+                  <li>Curate information sources down to TMS + one or two reputable medical sites; close the rest.</li>
+                </ol>
+              </div></details>
+              <details class="node"><summary><span class="tw">▸</span><span>Stage 2 — First 1–3 months</span></summary><div class="nbody">
+                <ol start="5">
+                  <li>Secure an allergist/immunologist as your care hub. In the Bay Area, start with the Stanford Emeryville allergy clinic (5800 Hollis St; 510-806-2100) or UCSF Allergy &amp; Immunology (400 Parnassus); Kaiser members request an internal Allergy/Immunology referral and ask specifically about mast-cell experience.</li>
+                  <li>Work the medication ladder methodically with the doctor — one change at a time, fair trials (cromolyn needs 2–6 weeks).</li>
+                  <li>If trialing a low-histamine diet, time-box it to 2–4 weeks with a dietitian and an explicit reintroduction plan.</li>
+                  <li>Screen for the "trifecta" (POTS, hypermobility/hEDS) if relevant symptoms exist.</li>
+                </ol>
+              </div></details>
+              <details class="node"><summary><span class="tw">▸</span><span>Stage 3 — If refractory or diagnostically unclear</span></summary><div class="nbody">
+                <ol start="9">
+                  <li>Escalate to omalizumab (off-label) with a specialist, and/or pursue a second opinion from a national expert (Dr. Cem Akin, Michigan; Dr. Mariana Castells, Brigham &amp; Women's — both treat the broad MCAS population). If a workup points to clonal/advanced systemic mastocytosis, that's the lane for Dr. Jason Gotlib at Stanford and for KIT-targeted therapy (avapritinib).</li>
+                </ol>
+              </div></details>
+              <details class="node"><summary><span class="tw">▸</span><span>Benchmarks that should change the plan</span></summary><div class="nbody">
+                <ul>
+                  <li><i>No improvement at all</i> on a properly escalated mast-cell regimen → reconsider whether MCAS is the right diagnosis and seek expert reassessment (don't keep adding supplements).</li>
+                  <li><i>Recurrent anaphylaxis or steroid dependence</i> → escalate to omalizumab / specialist referral.</li>
+                  <li><i>Diet shrinking, weight dropping, food fear rising</i> → stop restricting, involve a dietitian and mental-health support immediately.</li>
+                  <li><i>Being asked for large upfront cash payments, big supplement bundles, or "detox" packages</i> → pause and re-vet the provider.</li>
+                </ul>
+              </div></details>
+              <details class="node"><summary><span class="tw">▸</span><span>Self-experimentation guardrails</span></summary><div class="nbody">
+                <p>One variable at a time; define success in advance; time-box; log; keep the physician informed; set a hard budget; and never let an unproven adjunct displace the proven ladder. The low-risk, community-favored starting experiments are quercetin + vitamin C ± DAO before high-histamine meals — with realistic expectations.</p>
+              </div></details>
+            </div></details>
 
-          <h4>Trustworthy Resources</h4>
-          <ul>
-            <li>The Mast Cell Disease Society (TMS) — tmsforacure.org. Best anchor.</li>
-            <li>American Initiative in Mast Cell Diseases (AIM) — aimcd.net.</li>
-            <li>Allergy &amp; Asthma Network — allergyasthmanetwork.org.</li>
-            <li>Cleveland Clinic / Mayo Clinic MCAS pages.</li>
-            <li>Mast Cell Action (UK) — mastcellaction.org. Candid about over-restriction.</li>
-            <li>Book: "Never Bet Against Occam" by Dr. Lawrence Afrin (represents broad-criteria view; balance with mainstream sources).</li>
-          </ul>
+            <details class="node sec"><summary><span class="tw">▸</span><span>Caveats</span></summary><div class="nbody">
+              <ul>
+                <li><b>This is an educational resource, not medical advice.</b> Every medication, dose, supplement, and lifestyle change here must be reviewed with the treating physician and pharmacist, who know the full history, comorbidities, and current medications.</li>
+                <li><b>The diagnosis itself is genuinely contested.</b> "Consensus-1" (strict, AAAAI/ECNM-AIM) vs. "consensus-2" (broad, Afrin et al.): the medical community has not resolved this, and a diagnosis valid under one framework may not be accepted under the other. Treatment response remains the most meaningful real-world signal.</li>
+                <li><b>Evidence quality varies enormously.</b> The antihistamine/stabilizer ladder and epinephrine-for-anaphylaxis are well-established; omalizumab for MCAS is off-label with supportive but limited data; avapritinib is proven for <i>mastocytosis</i>, not MCAS; and most supplements/biohacks rest on preclinical, small-study, or anecdotal evidence. Don't let the volume of "natural" options imply they're equivalent to the proven core.</li>
+                <li><b>Provider details can change.</b> Names, addresses, phone numbers, and especially whether a clinic accepts general MCAS vs. only biopsy-proven mastocytosis should be confirmed directly before booking. Cross-check via tmsforacure.org and aimcd.net. No UCSF or Kaiser provider is documented as a dedicated MCAS specialist — those are general entry points.</li>
+                <li><b>Dosing figures are illustrative ranges from the literature</b>, for orientation only, not recommendations to self-dose.</li>
+              </ul>
+            </div></details>
 
-          <h4>Benchmarks to Change the Plan</h4>
-          <ul>
-            <li>No improvement on properly escalated regimen → reconsider diagnosis, expert reassessment, don't keep adding supplements.</li>
-            <li>Recurrent anaphylaxis or steroid dependence → omalizumab / specialist.</li>
-            <li>Diet shrinking, weight dropping, food fear rising → STOP restricting. Dietitian + mental health support.</li>
-            <li>Large upfront cash demands, supplement bundles, "detox" packages → pause and re-vet.</li>
-          </ul>
+            <details class="node sec"><summary><span class="tw">▸</span><span>A closing word for the friend</span></summary><div class="nbody">
+              <p><i>The most valuable things you can do are unglamorous — help your person reach a real allergist, help them keep a simple symptom diary, gently steer them away from the over-restriction-and-expensive-protocol spiral, and remind them that "better" (fewer flares, more foods, less fear) is the realistic, achievable goal, not a cure. The proven core of MCAS care is cheap, safe, and effective for most people; the noise around it is loud, costly, and largely optional. Keep the signal, mute the noise, and treat the next few months as a methodical, one-variable-at-a-time project rather than an emergency.</i></p>
+            </div></details>
 
-          <h4>Closing</h4>
-          <p>Better = fewer flares, more foods, less fear. NOT a cure. Proven core is cheap, safe, effective for most. Mute the noise. One variable at a time. Treat the next few months as a methodical project, not an emergency.</p>
+          </div>
         </div>
       </details>
+
     </section>
   </main>
 
@@ -1173,6 +1394,13 @@ function celebrate(msg){
     host.appendChild(c);
     setTimeout(()=>c.remove(), dur*1000+200);
   }
+}
+
+/* ---------- Full-report tree: expand / collapse all ---------- */
+function treeToggle(hostId, open){
+  const host = document.getElementById(hostId);
+  if (!host) return;
+  host.querySelectorAll('details.node').forEach(d => { d.open = open; });
 }
 
 /* ---------- Boot ---------- */
