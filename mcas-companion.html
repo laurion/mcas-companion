@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#4a8a7b">
+<title>MCAS Companion</title>
+<style>
+  :root{
+    --bg:#f4f7f6; --surface:#ffffff; --surface-2:#fbfdfc;
+    --ink:#20302d; --muted:#5d6f6b; --faint:#8a9a96;
+    --accent:#3f8576; --accent-deep:#2f6557; --accent-soft:#e4efeb;
+    --blue:#557ea3; --blue-soft:#e7eef5;
+    --warn:#a9621f; --warn-soft:#fbf1e3; --warn-border:#eed6b6;
+    --danger:#c0392b; --danger-deep:#9c2b20; --danger-soft:#fbe9e7;
+    --good:#3f8576; --mid:#c9962e; --high:#c0392b;
+    --border:#e3ebe8; --line:#eef3f1;
+    --radius:16px; --radius-sm:11px;
+    --shadow:0 1px 2px rgba(20,40,36,.05),0 6px 20px rgba(20,40,36,.05);
+    --shadow-lift:0 8px 30px rgba(20,40,36,.12);
+    --maxw:680px;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{
+    font:400 17px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg); color:var(--ink);
+    padding:0 0 calc(76px + env(safe-area-inset-bottom)); /* room for bottom nav */
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:var(--maxw); margin:0 auto; padding:0 16px}
+
+  /* ---------- Top emergency bar (always visible) ---------- */
+  header.topbar{
+    position:sticky; top:0; z-index:40;
+    background:rgba(244,247,246,.86); backdrop-filter:saturate(1.4) blur(10px);
+    border-bottom:1px solid var(--border);
+    padding-top:env(safe-area-inset-top);
+  }
+  .topbar-inner{max-width:var(--maxw); margin:0 auto; padding:8px 12px; display:flex; gap:10px; align-items:center}
+  .brand{display:flex; flex-direction:column; line-height:1.1; margin-right:auto}
+  .brand b{font-size:15px; letter-spacing:.2px}
+  .brand span{font-size:11px; color:var(--faint)}
+  .emergency-btn{
+    appearance:none; border:none; cursor:pointer;
+    background:var(--danger); color:#fff; font-weight:700; font-size:14px;
+    padding:11px 14px; border-radius:12px; display:flex; align-items:center; gap:7px;
+    box-shadow:0 2px 0 var(--danger-deep), 0 4px 14px rgba(192,57,43,.35);
+    transition:transform .08s ease;
+  }
+  .emergency-btn:active{transform:translateY(1px)}
+  .emergency-btn .pulse{
+    width:9px;height:9px;border-radius:50%;background:#fff;box-shadow:0 0 0 0 rgba(255,255,255,.7);
+    animation:pulse 2.2s infinite;
+  }
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(255,255,255,.6)}70%{box-shadow:0 0 0 8px rgba(255,255,255,0)}100%{box-shadow:0 0 0 0 rgba(255,255,255,0)}}
+
+  /* ---------- Disclaimer ---------- */
+  .disclaimer{
+    background:var(--warn-soft); border:1px solid var(--warn-border); color:#6e431a;
+    border-radius:var(--radius); padding:16px 18px; margin:16px 0 4px;
+  }
+  .disclaimer h2{margin:0 0 6px; font-size:16px; color:#7a4a18}
+  .disclaimer p{margin:0 0 12px; font-size:14.5px; line-height:1.5}
+  .disclaimer button{
+    appearance:none;border:1px solid var(--warn-border);background:#fff;color:var(--warn);
+    font-weight:600;font-size:14px;padding:9px 14px;border-radius:10px;cursor:pointer;
+  }
+  .disclaimer.slim{padding:9px 14px; display:flex; align-items:center; gap:8px; margin:12px 0 0}
+  .disclaimer.slim h2,.disclaimer.slim p,.disclaimer.slim button{display:none}
+  .disclaimer.slim .slimtext{display:block; font-size:12.5px; color:#7a4a18}
+  .disclaimer .slimtext{display:none}
+
+  /* ---------- Sections / tabs ---------- */
+  main{padding-top:4px}
+  .screen{display:none; animation:fade .25s ease}
+  .screen.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+  h1.page{font-size:24px; margin:18px 0 2px; letter-spacing:-.3px}
+  .page-sub{color:var(--muted); margin:0 0 14px; font-size:15px}
+
+  /* ---------- Cards ---------- */
+  .card{
+    background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+    padding:18px; margin:0 0 14px; box-shadow:var(--shadow);
+  }
+  .card.flush{padding:0; overflow:hidden}
+
+  /* ---------- Overall progress ---------- */
+  .ident{font-size:14px; color:var(--accent-deep); background:var(--accent-soft);
+    display:inline-block; padding:4px 11px; border-radius:999px; font-weight:600; margin-bottom:10px}
+  .bar{height:10px; background:var(--line); border-radius:999px; overflow:hidden}
+  .bar > i{display:block; height:100%; width:0; background:linear-gradient(90deg,var(--accent),#6fb3a2);
+    border-radius:999px; transition:width .6s cubic-bezier(.2,.8,.2,1)}
+  .bar.blue > i{background:linear-gradient(90deg,var(--blue),#84a8c9)}
+  .progress-row{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:7px}
+  .progress-row .n{font-variant-numeric:tabular-nums; font-weight:700; color:var(--ink)}
+  .progress-row .lbl{font-size:13px; color:var(--muted)}
+
+  /* ---------- Act headers ---------- */
+  .act{margin-bottom:22px}
+  .act-head{display:flex; align-items:flex-start; gap:12px; margin-bottom:6px}
+  .act-num{flex:0 0 auto; width:34px;height:34px;border-radius:10px;background:var(--accent-soft);
+    color:var(--accent-deep); font-weight:800; display:flex;align-items:center;justify-content:center; font-size:15px}
+  .act-title{margin:0; font-size:19px; letter-spacing:-.2px}
+  .act-when{font-size:12.5px; color:var(--faint); text-transform:uppercase; letter-spacing:.6px; font-weight:700}
+  .act-ident{font-size:14.5px; color:var(--accent-deep); font-style:italic; margin:2px 0 10px}
+  .act-locked-note{font-size:13px; color:var(--faint); margin:-4px 0 10px}
+  .ready-chip{font-size:11px; font-weight:700; color:#fff; background:var(--accent); padding:3px 9px; border-radius:999px; margin-left:auto; align-self:center}
+
+  /* ---------- Task cards ---------- */
+  .task{
+    background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-sm);
+    padding:14px 14px 12px; margin-bottom:10px; box-shadow:var(--shadow); transition:border-color .2s, background .2s;
+  }
+  .task.done{background:var(--surface-2); border-color:var(--accent-soft)}
+  .task-top{display:flex; gap:12px; align-items:flex-start}
+  .chk{flex:0 0 auto; width:26px;height:26px;border-radius:8px;border:2px solid var(--border);
+    background:#fff; cursor:pointer; display:flex;align-items:center;justify-content:center; margin-top:1px; transition:.18s}
+  .chk svg{width:15px;height:15px; stroke:#fff; stroke-width:3.4; fill:none; opacity:0; transform:scale(.5); transition:.18s}
+  .task.done .chk{background:var(--accent); border-color:var(--accent)}
+  .task.done .chk svg{opacity:1; transform:scale(1)}
+  .task-body{flex:1; min-width:0}
+  .task-action{font-weight:650; font-size:16.5px; line-height:1.35; margin:0}
+  .task.done .task-action{color:var(--muted); text-decoration:line-through; text-decoration-color:var(--faint)}
+  .task-why{margin:7px 0 0; font-size:14.5px; color:var(--muted); line-height:1.5}
+  .habit{margin-top:9px; font-size:13.5px; background:var(--blue-soft); color:#37597a;
+    border-radius:9px; padding:8px 11px; line-height:1.45}
+  .habit b{color:#2c4a66}
+  details.detail{margin-top:10px; border-top:1px dashed var(--line); padding-top:8px}
+  details.detail summary{cursor:pointer; font-size:13.5px; color:var(--accent-deep); font-weight:600; list-style:none; display:flex; align-items:center; gap:6px}
+  details.detail summary::-webkit-details-marker{display:none}
+  details.detail summary .tw{transition:transform .2s}
+  details.detail[open] summary .tw{transform:rotate(90deg)}
+  details.detail .dbody{font-size:14px; color:var(--muted); line-height:1.55; padding:8px 2px 2px}
+  details.detail .dbody ul{margin:6px 0; padding-left:18px}
+
+  /* ---------- Badges ---------- */
+  .badge-tray{display:flex; gap:8px; flex-wrap:wrap; margin-top:4px}
+  .badge{display:flex; align-items:center; gap:7px; font-size:13px; font-weight:600;
+    padding:7px 11px; border-radius:999px; border:1px solid var(--border); background:#fff; color:var(--faint)}
+  .badge.earned{color:var(--accent-deep); background:var(--accent-soft); border-color:transparent}
+  .badge .dot{font-size:15px; filter:grayscale(1); opacity:.5}
+  .badge.earned .dot{filter:none; opacity:1}
+
+  /* ---------- Symptom log ---------- */
+  .field{margin-bottom:15px}
+  .field label{display:block; font-weight:600; font-size:14.5px; margin-bottom:7px}
+  .field .hint{font-weight:400; color:var(--faint); font-size:13px}
+  .slider-row{display:flex; align-items:center; gap:12px}
+  input[type=range]{flex:1; accent-color:var(--accent)}
+  .sval{font-variant-numeric:tabular-nums; font-weight:700; min-width:28px; text-align:center; font-size:18px}
+  textarea,input[type=text]{
+    width:100%; border:1px solid var(--border); border-radius:10px; padding:11px 12px;
+    font:inherit; font-size:15px; background:#fff; color:var(--ink); resize:vertical;
+  }
+  textarea:focus,input:focus{outline:none; border-color:var(--accent)}
+  .btn{
+    appearance:none; border:none; cursor:pointer; font:inherit; font-weight:700; font-size:15.5px;
+    background:var(--accent); color:#fff; padding:13px 18px; border-radius:12px; width:100%;
+    box-shadow:0 2px 0 var(--accent-deep); transition:transform .08s;
+  }
+  .btn:active{transform:translateY(1px)}
+  .btn.ghost{background:#fff; color:var(--accent-deep); border:1px solid var(--border); box-shadow:none; font-weight:600}
+  .btn.row{width:auto; padding:10px 14px; font-size:14px}
+  .btn-grid{display:flex; gap:10px; margin-top:6px}
+
+  .strip{display:flex; gap:6px; margin-top:4px}
+  .strip .day{flex:1; text-align:center}
+  .strip .bar7{height:54px; border-radius:8px; background:var(--line); display:flex; align-items:flex-end; overflow:hidden; position:relative}
+  .strip .bar7 > i{display:block; width:100%; border-radius:8px 8px 0 0; transition:height .4s ease}
+  .strip .dlabel{font-size:10.5px; color:var(--faint); margin-top:5px}
+  .strip .dnum{font-size:11px; color:var(--muted); font-weight:600}
+  .strip .day.today .dlabel{color:var(--accent-deep); font-weight:700}
+
+  .streak-card{display:flex; align-items:center; gap:14px}
+  .streak-num{font-size:34px; font-weight:800; color:var(--accent-deep); line-height:1; font-variant-numeric:tabular-nums}
+  .streak-card .meta{font-size:13.5px; color:var(--muted); line-height:1.4}
+  .streak-card .meta b{color:var(--ink)}
+  .gentle{font-size:13px; color:var(--faint); margin-top:10px; font-style:italic}
+
+  /* ---------- Directory ---------- */
+  .spec{border:1px solid var(--border); border-radius:var(--radius-sm); padding:15px; margin-bottom:12px; background:#fff; box-shadow:var(--shadow)}
+  .spec h3{margin:0 0 3px; font-size:16.5px}
+  .spec .tag{display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.5px;
+    padding:3px 8px; border-radius:6px; margin-bottom:8px}
+  .tag.hub{background:var(--accent-soft); color:var(--accent-deep)}
+  .tag.opt{background:var(--blue-soft); color:#37597a}
+  .tag.spec2{background:#efe9f5; color:#5b4a78}
+  .tag.adv{background:var(--warn-soft); color:var(--warn)}
+  .spec .addr{font-size:14px; color:var(--muted); margin:0 0 10px}
+  .spec .note{font-size:13.5px; color:var(--muted); line-height:1.5; background:var(--surface-2); border-radius:9px; padding:10px 12px; margin:0 0 12px}
+  .spec .note.warn{background:var(--warn-soft); color:#6e431a}
+  .links{display:flex; gap:8px; flex-wrap:wrap}
+  .links a{text-decoration:none; font-size:14px; font-weight:600; padding:9px 13px; border-radius:10px; display:inline-flex; align-items:center; gap:6px}
+  .links a.call{background:var(--accent); color:#fff}
+  .links a.map{background:#fff; color:var(--accent-deep); border:1px solid var(--border)}
+  .links a.web{background:#fff; color:#37597a; border:1px solid var(--border)}
+
+  /* ---------- Cautions ---------- */
+  .caution-hero{background:linear-gradient(180deg,#fff7ef,#fbf1e3); border:1px solid var(--warn-border)}
+  .caution-hero h1{color:#7a4a18}
+  .trap{border-left:4px solid var(--warn); padding:4px 0 4px 14px; margin:0 0 16px}
+  .trap h3{margin:0 0 5px; font-size:16px; color:#7a4a18}
+  .trap p{margin:0; font-size:14.5px; color:var(--muted); line-height:1.55}
+  .flaglist{list-style:none; padding:0; margin:8px 0 0}
+  .flaglist li{position:relative; padding:7px 0 7px 26px; font-size:14.5px; color:var(--muted); border-bottom:1px solid var(--line); line-height:1.45}
+  .flaglist li:last-child{border-bottom:none}
+  .flaglist li::before{content:"⚠"; position:absolute; left:0; top:7px; color:var(--warn)}
+  .bench li::before{content:"→"; color:var(--accent); font-weight:800}
+
+  /* ---------- Reference accordions ---------- */
+  .acc{border:1px solid var(--border); border-radius:var(--radius-sm); margin-bottom:10px; background:#fff; overflow:hidden; box-shadow:var(--shadow)}
+  .acc > summary{cursor:pointer; list-style:none; padding:15px 16px; font-weight:700; font-size:16px; display:flex; align-items:center; gap:10px}
+  .acc > summary::-webkit-details-marker{display:none}
+  .acc > summary .tw{margin-left:auto; transition:transform .2s; color:var(--faint)}
+  .acc[open] > summary .tw{transform:rotate(90deg)}
+  .acc .accbody{padding:0 16px 16px; font-size:14.5px; color:var(--muted); line-height:1.6}
+  .acc .accbody h4{color:var(--ink); margin:14px 0 4px; font-size:14.5px}
+  .acc .accbody ul{padding-left:18px; margin:6px 0}
+  .acc .accbody li{margin-bottom:5px}
+  .tier{display:flex; gap:12px; padding:11px 0; border-bottom:1px solid var(--line)}
+  .tier:last-child{border-bottom:none}
+  .tier .t{flex:0 0 auto; font-weight:800; color:var(--accent-deep); width:46px; font-size:13px}
+  .tier .d{font-size:14px; line-height:1.5}
+  .grade{display:inline-block; font-size:11px; font-weight:700; padding:2px 7px; border-radius:5px; margin-right:6px}
+  .g-good{background:var(--accent-soft); color:var(--accent-deep)}
+  .g-mid{background:var(--blue-soft); color:#37597a}
+  .g-spec{background:#f0ece6; color:#7a6a52}
+  .g-bad{background:var(--danger-soft); color:var(--danger-deep)}
+  .reslist a{color:var(--accent-deep); font-weight:600; text-decoration:none; border-bottom:1px solid var(--accent-soft)}
+
+  /* ---------- Bottom nav ---------- */
+  nav.tabs{
+    position:fixed; left:0; right:0; bottom:0; z-index:45;
+    background:rgba(255,255,255,.94); backdrop-filter:blur(10px);
+    border-top:1px solid var(--border);
+    padding:6px 4px calc(6px + env(safe-area-inset-bottom));
+    display:flex; justify-content:center;
+  }
+  nav.tabs .inner{display:flex; max-width:var(--maxw); width:100%; justify-content:space-around}
+  nav.tabs button{
+    appearance:none; border:none; background:none; cursor:pointer; flex:1;
+    display:flex; flex-direction:column; align-items:center; gap:3px; padding:6px 2px;
+    color:var(--faint); font-size:11px; font-weight:600; border-radius:10px;
+  }
+  nav.tabs button svg{width:23px; height:23px; stroke:currentColor; stroke-width:1.9; fill:none; stroke-linecap:round; stroke-linejoin:round}
+  nav.tabs button.active{color:var(--accent-deep)}
+  nav.tabs button.active svg{stroke-width:2.2}
+
+  /* ---------- Emergency overlay ---------- */
+  .ovl{position:fixed; inset:0; z-index:100; background:rgba(20,8,6,.5); backdrop-filter:blur(2px);
+    display:none; align-items:flex-start; justify-content:center; padding:0; overflow:auto}
+  .ovl.show{display:flex}
+  .er{
+    background:#fff; width:100%; max-width:560px; min-height:100%;
+    border-top:8px solid var(--danger);
+  }
+  .er-head{position:sticky; top:0; background:var(--danger); color:#fff; padding:calc(14px + env(safe-area-inset-top)) 18px 14px; display:flex; align-items:center; gap:12px}
+  .er-head h2{margin:0; font-size:21px; flex:1}
+  .er-close{appearance:none; border:1px solid rgba(255,255,255,.5); background:rgba(255,255,255,.15); color:#fff;
+    font-size:15px; font-weight:700; padding:8px 14px; border-radius:10px; cursor:pointer}
+  .er-body{padding:18px}
+  .er-do{background:var(--danger-soft); border:1px solid #f1c4bf; border-radius:14px; padding:16px; margin-bottom:18px}
+  .er-do h3{margin:0 0 10px; color:var(--danger-deep); font-size:17px}
+  .er-step{display:flex; gap:12px; margin-bottom:12px; align-items:flex-start}
+  .er-step:last-child{margin-bottom:0}
+  .er-step .n{flex:0 0 auto; width:28px;height:28px;border-radius:50%; background:var(--danger); color:#fff; font-weight:800; display:flex; align-items:center; justify-content:center; font-size:15px}
+  .er-step .t{font-size:16px; line-height:1.4; font-weight:600}
+  .er-step .t small{display:block; font-weight:400; color:var(--muted); font-size:13.5px; margin-top:2px}
+  .er-recog h3{font-size:16px; margin:0 0 8px}
+  .er-recog .grp{margin-bottom:11px}
+  .er-recog .grp b{display:block; font-size:13px; text-transform:uppercase; letter-spacing:.5px; color:var(--danger-deep); margin-bottom:2px}
+  .er-recog .grp span{font-size:15px; color:var(--ink)}
+  .er-call{display:block; text-align:center; background:var(--danger); color:#fff; font-weight:800; font-size:19px; padding:16px; border-radius:14px; text-decoration:none; margin-top:8px; box-shadow:0 3px 0 var(--danger-deep)}
+
+  /* ---------- Toast / celebration ---------- */
+  #toast{position:fixed; left:50%; bottom:calc(90px + env(safe-area-inset-bottom)); transform:translateX(-50%) translateY(20px);
+    background:var(--ink); color:#fff; padding:13px 18px; border-radius:12px; font-size:14.5px; font-weight:600;
+    z-index:90; opacity:0; pointer-events:none; transition:.35s; box-shadow:var(--shadow-lift); max-width:90vw; text-align:center}
+  #toast.show{opacity:1; transform:translateX(-50%) translateY(0)}
+  #toast .b{color:#9fe0cf}
+  #confetti{position:fixed; inset:0; pointer-events:none; z-index:85; overflow:hidden}
+  .conf{position:absolute; width:9px; height:14px; border-radius:2px; top:-20px; will-change:transform,opacity}
+  @keyframes drop{to{transform:translateY(110vh) rotate(540deg); opacity:0}}
+
+  .foot{color:var(--faint); font-size:12.5px; text-align:center; padding:8px 0 4px; line-height:1.5}
+</style>
+</head>
+<body>
+
+<!-- ===== Top bar ===== -->
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand"><b>MCAS Companion</b><span>One variable at a time</span></div>
+    <button class="emergency-btn" onclick="openER()"><span class="pulse"></span> Anaphylaxis</button>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- Disclaimer -->
+  <div class="disclaimer" id="disclaimer">
+    <h2>This is not medical advice.</h2>
+    <p>This is an information resource to help you stay organized and calm. Every drug, dose, supplement, and strategy here must be vetted by your treating physician before you act on it.</p>
+    <button onclick="ackDisclaimer()">I understand — let's begin</button>
+    <span class="slimtext">ℹ️ Information, not medical advice. Vet everything with your physician.</span>
+  </div>
+
+  <main>
+    <!-- ============ JOURNEY ============ -->
+    <section class="screen active" id="screen-journey">
+      <h1 class="page">Your journey</h1>
+      <p class="page-sub">Three acts. You don't need to rush. The goal is a system you can keep, not a sprint.</p>
+
+      <div class="card">
+        <span class="ident" id="overallIdent">I'm building a calm, methodical system.</span>
+        <div class="progress-row"><span class="lbl">Overall progress</span><span class="n" id="overallPct">0%</span></div>
+        <div class="bar"><i id="overallBar"></i></div>
+        <div class="badge-tray" id="badgeTray" style="margin-top:14px"></div>
+      </div>
+
+      <div id="actsHost"></div>
+
+      <p class="foot">Better = fewer flares, more foods, less fear. Not a cure — and that's okay. The proven core is cheap, safe, and effective for most people.</p>
+    </section>
+
+    <!-- ============ LOG ============ -->
+    <section class="screen" id="screen-log">
+      <h1 class="page">Today's signal</h1>
+      <p class="page-sub">One tap a day. <b>After your morning coffee</b>, open this and log how your body feels. That's the whole habit.</p>
+
+      <div class="card streak-card">
+        <div class="streak-num" id="streakNum">0</div>
+        <div class="meta">
+          <div><b id="streakWord">days logged</b> in a row</div>
+          <div id="streakBest">Most ever: 0 · Total entries: 0</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="progress-row" style="margin-bottom:10px"><span class="lbl">Last 7 days</span><span class="lbl" id="weekHint"></span></div>
+        <div class="strip" id="strip"></div>
+        <p class="gentle">Missed a day? That's data too — bodies aren't streaks. Just log today.</p>
+      </div>
+
+      <div class="card">
+        <h3 style="margin:0 0 16px; font-size:17px" id="logTitle">Log today</h3>
+        <div class="field">
+          <label>Overall symptoms <span class="hint">1 = great, 10 = rough</span></label>
+          <div class="slider-row"><input type="range" min="1" max="10" value="3" id="f_sev" oninput="document.getElementById('v_sev').textContent=this.value"><span class="sval" id="v_sev">3</span></div>
+        </div>
+        <div class="field">
+          <label>Sleep <span class="hint">1 = poor, 10 = great</span></label>
+          <div class="slider-row"><input type="range" min="1" max="10" value="5" id="f_sleep" oninput="document.getElementById('v_sleep').textContent=this.value"><span class="sval" id="v_sleep">5</span></div>
+        </div>
+        <div class="field">
+          <label>Stress <span class="hint">1 = calm, 10 = high</span></label>
+          <div class="slider-row"><input type="range" min="1" max="10" value="4" id="f_stress" oninput="document.getElementById('v_stress').textContent=this.value"><span class="sval" id="v_stress">4</span></div>
+        </div>
+        <div class="field">
+          <label>Food notes <span class="hint">what stood out</span></label>
+          <input type="text" id="f_food" placeholder="e.g. leftovers reheated, glass of wine, fresh meal">
+        </div>
+        <div class="field">
+          <label>Anything new? <span class="hint">new med, supplement, product, place</span></label>
+          <input type="text" id="f_new" placeholder="e.g. started famotidine, new laundry detergent">
+        </div>
+        <div class="field">
+          <label>Notes</label>
+          <textarea id="f_notes" rows="2" placeholder="Optional — a few words is plenty"></textarea>
+        </div>
+        <button class="btn" onclick="saveLog()">Save today's entry</button>
+      </div>
+
+      <div class="card">
+        <h3 style="margin:0 0 6px; font-size:16px">Your data stays on this device</h3>
+        <p style="margin:0 0 12px; font-size:14px; color:var(--muted)">Nothing is sent anywhere — it lives only in this browser. Back it up regularly so you don't lose it.</p>
+        <div class="btn-grid">
+          <button class="btn ghost row" onclick="exportData()">⬇ Export backup</button>
+          <button class="btn ghost row" onclick="document.getElementById('importFile').click()">⬆ Import backup</button>
+        </div>
+        <input type="file" id="importFile" accept="application/json" style="display:none" onchange="importData(this)">
+      </div>
+    </section>
+
+    <!-- ============ DIRECTORY ============ -->
+    <section class="screen" id="screen-dir">
+      <h1 class="page">Bay Area care</h1>
+      <p class="page-sub">Build a hub-and-spoke team. Your <b>hub</b> is an allergist / immunologist. Tap to call. Read the honest notes — they matter.</p>
+
+      <div class="spec">
+        <span class="tag hub">Most convenient hub</span>
+        <h3>Stanford Allergy / Immunology — Emeryville</h3>
+        <p class="addr">5800 Hollis St, 3rd Fl, Emeryville, CA 94608 · East Bay satellite</p>
+        <div class="note">Dr. Meng Chen authored "Mast cell disorders: Protean manifestations and treatment responses." The most convenient academic option for the East Bay.</div>
+        <div class="links">
+          <a class="call" href="tel:+15108062100">📞 510-806-2100</a>
+          <a class="map" target="_blank" href="https://maps.google.com/?q=5800+Hollis+St+3rd+Fl+Emeryville+CA+94608">🗺 Map</a>
+        </div>
+      </div>
+
+      <div class="spec">
+        <span class="tag opt">Strong general option</span>
+        <h3>UCSF Allergy & Immunology</h3>
+        <p class="addr">400 Parnassus Ave, 2nd Fl, San Francisco</p>
+        <div class="note">Dr. Michele Pham directs Adult Clinical Immunology. No faculty publicly lists MCAS as a specialty, but it's a strong general program. Reassuring sign: UCSF does <b>not</b> offer IgG "food sensitivity" testing — those tests aren't validated, so declining them is a mark of quality.</div>
+        <div class="links">
+          <a class="call" href="tel:+14153532961">📞 415-353-2961</a>
+          <a class="call" href="tel:+14153532725">📞 415-353-2725</a>
+          <a class="map" target="_blank" href="https://maps.google.com/?q=400+Parnassus+Ave+San+Francisco">🗺 Map</a>
+        </div>
+      </div>
+
+      <div class="spec">
+        <span class="tag opt">If you have Kaiser</span>
+        <h3>Kaiser NorCal — Allergy / Immunology</h3>
+        <p class="addr">Multiple NorCal locations</p>
+        <div class="note">No dedicated MCAS center, but Allergy/Immunology departments handle workups. Ask your PCP for an internal Allergy/Immunology referral — and ask the provider directly about their mast-cell experience.</div>
+      </div>
+
+      <div class="spec">
+        <span class="tag adv">Advanced disease only</span>
+        <h3>Stanford Cancer Center — Dr. Jason Gotlib</h3>
+        <p class="addr">875 Blake Wilbur Dr, Stanford</p>
+        <div class="note warn">Treats <b>only</b> biopsy-proven advanced systemic mastocytosis, not general MCAS. This is a destination for a specific, confirmed diagnosis — not a first stop.</div>
+        <div class="links">
+          <a class="call" href="tel:+16504986000">📞 650-498-6000</a>
+          <a class="map" target="_blank" href="https://maps.google.com/?q=875+Blake+Wilbur+Dr+Stanford">🗺 Map</a>
+        </div>
+      </div>
+
+      <h1 class="page" style="font-size:20px">National second opinions</h1>
+      <p class="page-sub">For refractory cases — usually later, via your specialist.</p>
+
+      <div class="spec">
+        <span class="tag spec2">Expert</span>
+        <h3>Dr. Cem Akin</h3>
+        <p class="addr">University of Michigan, Ann Arbor</p>
+        <div class="links"><a class="call" href="tel:+17342322071">📞 734-232-2071</a></div>
+      </div>
+      <div class="spec">
+        <span class="tag spec2">Expert</span>
+        <h3>Dr. Mariana Castells</h3>
+        <p class="addr">Brigham & Women's / Harvard, Boston</p>
+        <div class="note">One of the few academic centers explicitly taking the broad MCAS population.</div>
+        <div class="links"><a class="call" href="tel:+16177329850">📞 617-732-9850</a></div>
+      </div>
+      <div class="spec">
+        <span class="tag adv">Enter with eyes open</span>
+        <h3>Dr. Lawrence Afrin — AIM Center</h3>
+        <p class="addr">Armonk, NY · telehealth · "Consensus-2" co-author</p>
+        <div class="note warn"><b>Cash-pay private practice</b> — doesn't bill insurance; initial consults run in the multi-thousand-dollar range. Reviews are mixed. A real option for some, but go in informed, not desperate.</div>
+      </div>
+    </section>
+
+    <!-- ============ CAUTIONS ============ -->
+    <section class="screen" id="screen-caution">
+      <div class="card caution-hero">
+        <h1 class="page" style="margin-top:4px">Don't do this</h1>
+        <p class="page-sub" style="color:#8a6a3a">This page matters more than most of your to-do list. The biggest dangers in MCAS aren't the disease — they're the traps around it.</p>
+      </div>
+
+      <div class="card">
+        <div class="trap">
+          <h3>1. Don't let your diet become a shrinking cage</h3>
+          <p>Low-histamine diet evidence is weak. Over-restriction causes malnutrition, microbiome harm, and real psychological distress. If you trial a diet, time-box it to 2–4 weeks <b>with a dietitian</b>, then systematically reintroduce. Keep your diet broad. Cutting fiber-rich or vitamin-C-rich foods (tomatoes, citrus) is counterproductive.</p>
+        </div>
+        <div class="trap">
+          <h3>2. Don't fall for "one cause explains everything"</h3>
+          <p>Be skeptical of anyone who says it's all mold, all CIRS, all Lyme, or all trauma. Real bodies are messier than single-cause stories — and single-cause stories sell expensive protocols.</p>
+        </div>
+        <div class="trap">
+          <h3>3. Don't chase the supplement spiral</h3>
+          <p>No supplement replaces the medication ladder. Branded "MCAS protocol" bundles are a marketing pattern, not a treatment. Add at most one thing at a time, low-risk, with your doctor — and stop adding if nothing's helping.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 style="margin:0 0 6px; font-size:17px">Predatory operator red flags</h3>
+        <p style="margin:0 0 4px; font-size:14px; color:var(--muted)">Be <b>most</b> skeptical when you're <b>most</b> desperate — that's exactly when these operations work.</p>
+        <ul class="flaglist">
+          <li>Testimonials shown instead of data</li>
+          <li>One cause explains everything ("it's all mold / CIRS / Lyme / trauma")</li>
+          <li>Branded "MCAS protocol" supplement bundles</li>
+          <li>Unvalidated tests (IgG "food sensitivity" panels)</li>
+          <li>Cash-only, insurance-avoidant, high upfront cost</li>
+          <li>Discouraging conventional medical care</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h3 style="margin:0 0 6px; font-size:17px">Signals it's time to change the plan</h3>
+        <ul class="flaglist bench">
+          <li>No improvement on a properly escalated regimen → reconsider the diagnosis and get expert reassessment. Don't just keep adding supplements.</li>
+          <li>Recurrent anaphylaxis or steroid dependence → omalizumab / specialist.</li>
+          <li>Diet shrinking, weight dropping, food fear rising → <b>stop restricting.</b> Dietitian + mental health support.</li>
+          <li>Large upfront cash demands, supplement bundles, "detox" packages → pause and re-vet.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============ LEARN / REFERENCE ============ -->
+    <section class="screen" id="screen-learn">
+      <h1 class="page">Reference</h1>
+      <p class="page-sub">Tap to open. Read when you're ready — never all at once.</p>
+
+      <details class="acc">
+        <summary>💊 The treatment ladder <svg class="tw" width="16" height="16" viewBox="0 0 16 16"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
+        <div class="accbody">
+          <p>Medication-first, not diet-first. Escalate <b>one step at a time</b>, with your doctor.</p>
+          <div class="tier"><span class="t">Tier 1</span><span class="d">H1 antihistamines (cetirizine / fexofenadine / loratadine), often 2–4× standard dose under doctor guidance. First-gen (hydroxyzine, diphenhydramine, cyproheptadine) for breakthrough or sleep.</span></div>
+          <div class="tier"><span class="t">Tier 2</span><span class="d">Add an H2 antihistamine (famotidine / Pepcid). Not a substitute for H1 — you take both together.</span></div>
+          <div class="tier"><span class="t">Tier 3</span><span class="d">Mast-cell stabilizers. Cromolyn sodium (Gastrocrom, ~200 mg 4×/day before meals & bedtime; may take 2–6 weeks). Ketotifen (~1–2 mg 2×/day, also has H1 effect).</span></div>
+          <div class="tier"><span class="t">Tier 4</span><span class="d">Leukotriene antagonist — montelukast (~10 mg/day). FDA boxed warning for neuropsychiatric effects — report any mood changes.</span></div>
+          <div class="tier"><span class="t">Tier 5</span><span class="d">Low-dose aspirin (81 mg) for prostaglandin-mediated flushing — cautiously, since NSAIDs can themselves be a trigger.</span></div>
+          <div class="tier"><span class="t">Tier 6</span><span class="d">Omalizumab (Xolair) injection for refractory disease. A 2024 systematic review found ~61% partial response, ~18% complete response.</span></div>
+          <div class="tier"><span class="t">Tier 7</span><span class="d">Corticosteroids — rescue only, never maintenance.</span></div>
+          <div class="tier"><span class="t">Always</span><span class="d">Epinephrine auto-injectors (carry <b>two</b>) if any anaphylaxis risk, plus a written emergency action plan. Anaphylaxis can be biphasic — go to the ER even if symptoms resolve.</span></div>
+        </div>
+      </details>
+
+      <details class="acc">
+        <summary>🪣 Triggers — the histamine bucket <svg class="tw" width="16" height="16" viewBox="0 0 16 16"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
+        <div class="accbody">
+          <p>Think of a bucket: load accumulates from many sources, and symptoms appear only when it overflows. No single trigger is "the" cause.</p>
+          <h4>Foods</h4>
+          <ul><li>Aged / fermented / cured / smoked / leftover foods</li><li>Alcohol (also blocks DAO, the enzyme that clears histamine)</li><li>MSG, artificial dyes; sometimes tomatoes, spinach, eggplant</li></ul>
+          <h4>Medications</h4>
+          <ul><li>NSAIDs / aspirin, opioids, some antibiotics, IV contrast dye, certain anesthesia agents</li><li><b>Flag MCAS before any procedure.</b></li></ul>
+          <h4>Physical / environmental</h4>
+          <ul><li>Temperature extremes & changes, sun, exercise, pressure or friction on skin, fragrances, mold</li></ul>
+          <h4>Internal</h4>
+          <ul><li>Stress, infection, insect venom, hormonal fluctuations</li></ul>
+        </div>
+      </details>
+
+      <details class="acc">
+        <summary>🥗 Diet — handle with care <svg class="tw" width="16" height="16" viewBox="0 0 16 16"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
+        <div class="accbody">
+          <p>The biggest trap in all of MCAS. Evidence for low-histamine diets is weak.</p>
+          <h4>Do</h4>
+          <ul><li>Time-boxed trial of 2–4 weeks <b>with a dietitian</b>, then systematic reintroduction</li><li>Keep your diet broad</li><li>Eat fresh foods promptly; freeze leftovers immediately rather than long-fridge storage</li></ul>
+          <h4>Don't</h4>
+          <ul><li>Permanent severe restriction</li><li>Cutting fiber-rich or vitamin-C-rich foods (tomatoes, citrus) — that's counterproductive</li></ul>
+        </div>
+      </details>
+
+      <details class="acc">
+        <summary>🌿 Supplements — honest grading <svg class="tw" width="16" height="16" viewBox="0 0 16 16"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
+        <div class="accbody">
+          <p>None of these replaces the medication ladder. Manage expectations.</p>
+          <h4><span class="grade g-good">Most-studied</span></h4>
+          <ul><li>Quercetin (~500–1000 mg/day, phytosome form for absorption; 12–14 wk safety studies)</li><li>Luteolin (~100–400 mg/day, low bioavailability)</li></ul>
+          <h4><span class="grade g-mid">Histamine-targeted</span></h4>
+          <ul><li>DAO enzyme before meals (limited human efficacy data)</li><li>Vitamin C 1000–2000 mg/day (supports histamine breakdown)</li></ul>
+          <h4><span class="grade g-mid">Supportive</span></h4>
+          <ul><li>Vitamin D (correct documented deficiency), magnesium glycinate, omega-3s</li></ul>
+          <h4><span class="grade g-spec">Speculative</span></h4>
+          <ul><li>NAC, PEA (preclinical only)</li></ul>
+          <h4><span class="grade g-bad">Caution — probiotics</span></h4>
+          <ul><li>Some strains <b>produce</b> histamine and can worsen symptoms.</li><li>Avoid: L. casei, L. plantarum, L. reuteri, L. bulgaricus. Favor Bifidobacterium strains.</li></ul>
+          <p style="margin-top:12px">The popular community combo "quercetin + vitamin C + DAO before high-histamine meals" is low-risk for most — but it's a complement, not the treatment.</p>
+        </div>
+      </details>
+
+      <details class="acc">
+        <summary>🧘 Lifestyle <svg class="tw" width="16" height="16" viewBox="0 0 16 16"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
+        <div class="accbody">
+          <ul>
+            <li><b>Nervous-system regulation:</b> stress is a real trigger, so vagal / breathing / sleep practices are legit. But paid programs (DNRS, Gupta, Primal Trust, Safe and Sound Protocol) have weak-to-absent rigorous MCAS evidence. Cheap general practices = good. Pricey "brain retraining" = optional, experimental, budget-cap it.</li>
+            <li><b>Sleep optimization:</b> high-value, no downside.</li>
+            <li><b>Gut health:</b> support microbiome diversity; beware over-restrictive diets that harm it.</li>
+            <li><b>Mold / environment:</b> fix real, visible, measured mold. Be skeptical of expensive "mold detox" protocols and CIRS practitioners who blame everything on mold.</li>
+            <li><b>The "trifecta":</b> screen for POTS (salt / fluids / compression) and hypermobility / hEDS (PT, joint protection).</li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="acc">
+        <summary>🔗 Trustworthy resources <svg class="tw" width="16" height="16" viewBox="0 0 16 16"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
+        <div class="accbody reslist">
+          <ul>
+            <li><a target="_blank" href="https://tmsforacure.org">The Mast Cell Disease Society (TMS)</a> — your best anchor.</li>
+            <li><a target="_blank" href="https://aimcd.net">American Initiative in Mast Cell Diseases (AIM)</a></li>
+            <li><a target="_blank" href="https://allergyasthmanetwork.org">Allergy & Asthma Network</a></li>
+            <li>Cleveland Clinic / Mayo Clinic MCAS pages</li>
+            <li><a target="_blank" href="https://mastcellaction.org">Mast Cell Action (UK)</a> — candid about over-restriction.</li>
+            <li>Book: <i>"Never Bet Against Occam"</i> by Dr. Lawrence Afrin (broad-criteria view — balance it with mainstream sources).</li>
+          </ul>
+          <p style="margin-top:10px"><b>Curate to these.</b> Close the Facebook doom-scroll groups — they raise anxiety, which is itself a trigger.</p>
+        </div>
+      </details>
+
+      <details class="acc">
+        <summary>❓ Why "diagnosis is contested" <svg class="tw" width="16" height="16" viewBox="0 0 16 16"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
+        <div class="accbody">
+          <p>MCAS diagnosis is genuinely contested between a strict definition ("consensus-1") and a broad one ("consensus-2"). You may meet doctors who disagree. That's not you failing — it's an unsettled area of medicine. The good news: the evidence-based core (H1 + H2 antihistamines) is cheap, safe, and also <i>diagnostic</i> — if it helps, that's informative regardless of which camp a doctor is in.</p>
+        </div>
+      </details>
+    </section>
+  </main>
+
+  <p class="foot">Treat the next few months as a methodical project, not an emergency. Mute the noise. One variable at a time.</p>
+</div>
+
+<!-- ===== Bottom nav ===== -->
+<nav class="tabs">
+  <div class="inner">
+    <button class="active" data-screen="journey" onclick="show('journey',this)">
+      <svg viewBox="0 0 24 24"><path d="M3 12l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>Journey</button>
+    <button data-screen="log" onclick="show('log',this)">
+      <svg viewBox="0 0 24 24"><path d="M4 4h16v16H4z"/><path d="M8 9h8M8 13h8M8 17h5"/></svg>Log</button>
+    <button data-screen="dir" onclick="show('dir',this)">
+      <svg viewBox="0 0 24 24"><path d="M12 21s-7-5.5-7-11a7 7 0 0114 0c0 5.5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>Care</button>
+    <button data-screen="caution" onclick="show('caution',this)">
+      <svg viewBox="0 0 24 24"><path d="M12 3l9 16H3z"/><path d="M12 10v4M12 17v.5"/></svg>Cautions</button>
+    <button data-screen="learn" onclick="show('learn',this)">
+      <svg viewBox="0 0 24 24"><path d="M4 5a2 2 0 012-2h13v16H6a2 2 0 00-2 2z"/><path d="M19 3v18"/></svg>Reference</button>
+  </div>
+</nav>
+
+<!-- ===== Emergency overlay ===== -->
+<div class="ovl" id="erOverlay" onclick="if(event.target===this)closeER()">
+  <div class="er">
+    <div class="er-head">
+      <h2>⚠ Anaphylaxis</h2>
+      <button class="er-close" onclick="closeER()">Close</button>
+    </div>
+    <div class="er-body">
+      <div class="er-do">
+        <h3>Act now — in order</h3>
+        <div class="er-step"><span class="n">1</span><span class="t">Give epinephrine immediately<small>IM into the mid-outer thigh. Don't wait. Don't substitute antihistamines.</small></span></div>
+        <div class="er-step"><span class="n">2</span><span class="t">Call 911 — say "anaphylaxis"</span></div>
+        <div class="er-step"><span class="n">3</span><span class="t">Lie flat, legs raised<small>Or a comfortable position if breathing is hard.</small></span></div>
+        <div class="er-step"><span class="n">4</span><span class="t">Second dose as early as 5 min later<small>If there's no improvement.</small></span></div>
+        <div class="er-step"><span class="n">5</span><span class="t">Go to the ER even if symptoms resolve<small>Reactions can be biphasic. Observation for 4–6+ hours.</small></span></div>
+        <a class="er-call" href="tel:911">📞 Call 911</a>
+      </div>
+      <div class="er-recog">
+        <h3>How to recognize it</h3>
+        <div class="grp"><b>Skin</b><span>Widespread hives, flushing, swelling of face / lips / tongue</span></div>
+        <div class="grp"><b>Breathing</b><span>Throat tightness, hoarse voice, wheezing, shortness of breath</span></div>
+        <div class="grp"><b>Heart</b><span>Dizziness, faintness, weak/rapid pulse, pale or bluish skin, collapse</span></div>
+        <div class="grp"><b>Gut</b><span>Repetitive vomiting, severe cramping, diarrhea</span></div>
+        <div class="grp"><b>Other</b><span>Sudden anxiety or a "sense of impending doom"</span></div>
+        <p style="font-size:13px;color:var(--muted);margin-top:14px">Carry two auto-injectors always, kept at room temperature. Make sure the people around you know where they are.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="confetti"></div>
+<div id="toast"></div>
+
+<script>
+"use strict";
+/* ============================================================
+   MCAS Companion — all state lives in localStorage on this device.
+   ============================================================ */
+const LS = {
+  done:'mcas_done', log:'mcas_log', badges:'mcas_badges', ack:'mcas_ack', actCelebrated:'mcas_actceleb'
+};
+const get = (k,d) => { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch(e){ return d; } };
+const set = (k,v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} };
+
+/* ---------- Content model ---------- */
+const ACTS = [
+  {
+    id:'act1', num:'I', title:'This week', when:'Immediate moves',
+    ident:'I’m someone who takes one small, real step.',
+    tasks:[
+      { id:'a1-meds', badge:'foundation',
+        action:'Message your doctor today: ask about a 2nd-gen H1 antihistamine + famotidine.',
+        why:'This is the evidence-based core — cheap, safe, and also diagnostic. If it helps, that itself tells you something. Medication-first beats diet-first.',
+        habit:'Stack it: <b>right after you read this</b>, open your patient portal or texts and send the message. Sending it is the win — not the reply.',
+        detail:'Foundational regimen = a 2nd-gen H1 (cetirizine, fexofenadine, or loratadine) plus famotidine (an H2 blocker). They work together; H2 is not a substitute for H1. H1 is often dosed at 2–4× standard under doctor guidance. This combination is the backbone everything else builds on.' },
+      { id:'a1-dose',
+        action:'Once you’re on it: take your H1 antihistamine after breakfast, every day.',
+        why:'Consistency is the whole point. A steady daily dose keeps your "histamine bucket" from filling as fast.',
+        habit:'Habit stack — <b>after I pour my morning coffee, I take my antihistamine.</b> Keep the bottle next to the mug. Same cue, every day.',
+        detail:'Some people split dosing morning and night with their doctor’s guidance. The identity to grow into: "I’m someone who takes my meds reliably," not "I’m trying to remember my meds."' },
+      { id:'a1-epi', badge:'kit',
+        action:'Ask your doctor about epinephrine auto-injectors. If yes: get TWO + a written action plan.',
+        why:'Anaphylaxis is the one thing you cannot afford to be unprepared for. Two injectors, kept at room temperature, plus a plan you’ve actually read.',
+        habit:'Once you have them, do one rehearsal: read the Anaphylaxis screen (red button, top of every page) out loud. Knowing it cold removes fear.',
+        detail:'Carry two auto-injecters always. Learn the anaphylaxis signs (skin, breathing, heart, gut, sense of doom). Make the people around you know where the injectors are. A written emergency action plan from your doctor is part of this — it tells others what to do.' },
+      { id:'a1-log',
+        action:'Start a daily symptom log — today.',
+        why:'You can’t spot patterns from memory. A 10-second daily entry is the single most useful data you’ll bring to every appointment.',
+        habit:'Cue → response → reward: <b>after your morning coffee [cue], open the Log tab [response], one slider tap, done [reward].</b> Frictionless on purpose.',
+        detail:'Track: overall symptoms 1–10, sleep, stress, notable foods, and anything new. The "anything new" field is gold — new med, supplement, product, or place often explains a flare two days later.' },
+      { id:'a1-info',
+        action:'Curate your info sources to TMS + 1–2 reputable sites. Leave the doom-scroll groups.',
+        why:'Anxiety is itself a real MCAS trigger. Facebook horror-story groups raise your stress load for zero medical benefit.',
+        habit:'Bookmark tmsforacure.org now (it’s in the Reference tab). Then mute or leave one fear-amplifying group today.',
+        detail:'Anchor to The Mast Cell Disease Society (tmsforacure.org) plus one or two mainstream medical pages (Cleveland Clinic, Mayo). Mast Cell Action (UK) is refreshingly candid about over-restriction. Curating sources is a treatment, not a distraction.' },
+    ]
+  },
+  {
+    id:'act2', num:'II', title:'Building the system', when:'1–3 months',
+    ident:'I’m someone who runs a calm, methodical project.',
+    tasks:[
+      { id:'a2-team', badge:'allergist',
+        action:'Book your hub: an allergist / immunologist. (See the Care tab.)',
+        why:'A hub-and-spoke team beats scattered visits. Your hub coordinates; spokes get added only as needed.',
+        habit:'Stack onto an existing errand — call the Emeryville Stanford clinic (Care tab, tap-to-dial) the next time you’re already on the phone with anyone.',
+        detail:'Hub: allergist / immunologist. Spokes as needed: hematologist, GI, an MCAS-aware dietitian, mental-health support, and a supportive PCP. You don’t need all of them — add a spoke only when a real need shows up.' },
+      { id:'a2-ladder',
+        action:'Work the medication ladder methodically — one change at a time.',
+        why:'Changing two things at once means you learn nothing. One variable, a fair trial, then judge.',
+        habit:'Use your symptom log as the scoreboard. Before each change, note the date in the log’s "anything new" field.',
+        detail:'Ladder order: H1 → add H2 → mast-cell stabilizer (cromolyn or ketotifen) → montelukast → low-dose aspirin → omalizumab → steroids (rescue only). Give fair trials: cromolyn can take 2–6 weeks to work. Montelukast has an FDA boxed warning for mood changes — report any. See the full ladder in Reference.' },
+      { id:'a2-diet',
+        action:'If you trial a diet: 2–4 weeks WITH a dietitian, then reintroduce. Set the end date now.',
+        why:'A diet trial without an end date becomes a shrinking cage. The reintroduction is the whole point.',
+        habit:'Before you start, write the reintroduction date in your calendar. No dietitian booked = don’t start the restriction.',
+        detail:'Low-histamine diet evidence is weak; over-restriction causes malnutrition, microbiome harm, and food fear. Keep the diet broad. Eat fresh, freeze leftovers immediately. Never cut fiber-rich or vitamin-C-rich foods (tomatoes, citrus) — that backfires. If diet is shrinking and fear is rising, that’s a STOP signal (see Cautions).' },
+      { id:'a2-trifecta',
+        action:'Ask to be screened for the "trifecta": POTS and hypermobility / hEDS.',
+        why:'These commonly travel with MCAS. Naming them early saves months of confusion.',
+        habit:'Add it to your next allergist appointment agenda — one line in your notes app.',
+        detail:'POTS (dizziness on standing, racing heart) is managed with salt, fluids, and compression. hEDS / hypermobility is managed with physical therapy and joint protection. Screening is simple to ask for and changes how symptoms get interpreted.' },
+    ]
+  },
+  {
+    id:'act3', num:'III', title:'If you get stuck', when:'Refractory',
+    ident:'I’m someone who escalates wisely, not desperately.',
+    locked:'You probably won’t need this for a while — the proven core helps most people. It’s here when you do.',
+    tasks:[
+      { id:'a3-xolair',
+        action:'If properly escalated meds aren’t enough: discuss omalizumab (Xolair) with your specialist.',
+        why:'For refractory disease, omalizumab has real evidence — a 2024 review found ~61% partial and ~18% complete response.',
+        habit:'This is a specialist conversation, not a DIY step. Bring your symptom log to show the regimen you’ve actually tried.',
+        detail:'Omalizumab is used off-label here and given by injection. It sits above the standard ladder. Recurrent anaphylaxis or steroid dependence is a clear signal to move toward it with a specialist rather than adding more supplements.' },
+      { id:'a3-secondop',
+        action:'Get a second opinion from a national expert: Dr. Cem Akin or Dr. Mariana Castells.',
+        why:'When local care plateaus, a national expert can re-anchor the whole plan. Castells’ center explicitly takes the broad MCAS population.',
+        habit:'Many offer telehealth. Ask your hub allergist to help with the referral and records.',
+        detail:'Dr. Cem Akin — University of Michigan. Dr. Mariana Castells — Brigham & Women’s / Harvard. Both in the Care tab with phone numbers. A second opinion is also the moment to reconsider the diagnosis if nothing has worked.' },
+      { id:'a3-advanced',
+        action:'If a workup points to clonal / advanced mastocytosis: see Dr. Jason Gotlib at Stanford.',
+        why:'Biopsy-proven advanced systemic mastocytosis is a different disease with targeted therapy (e.g. avapritinib). It needs the right specialist.',
+        habit:'This only applies with specific biopsy findings — your specialist will tell you. Don’t self-route here.',
+        detail:'Dr. Jason Gotlib at Stanford Cancer Center treats only biopsy-proven advanced systemic mastocytosis, not general MCAS. KIT-targeted therapy (avapritinib) is for this confirmed population. It’s the right door for a specific diagnosis — and the wrong one as a first stop.' },
+    ]
+  }
+];
+
+const BADGES = [
+  { id:'foundation', icon:'💊', label:'Foundation started' },
+  { id:'kit',        icon:'🩹', label:'Emergency kit ready' },
+  { id:'firstlog',   icon:'📓', label:'First log entry' },
+  { id:'week',       icon:'🌱', label:'7 days logged' },
+  { id:'allergist',  icon:'🩺', label:'Allergist booked' },
+  { id:'act1',       icon:'⭐', label:'Act I complete' },
+];
+
+/* ---------- State helpers ---------- */
+let done = get(LS.done, {});
+let badges = get(LS.badges, {});
+let logs = get(LS.log, {});
+let celebrated = get(LS.actCelebrated, {});
+
+const todayKey = () => { const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); };
+
+/* ---------- Disclaimer ---------- */
+function ackDisclaimer(){ set(LS.ack, true); document.getElementById('disclaimer').classList.add('slim'); }
+if (get(LS.ack,false)) document.getElementById('disclaimer').classList.add('slim');
+
+/* ---------- Navigation ---------- */
+function show(name, btn){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-'+name).classList.add('active');
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+/* ---------- Emergency overlay ---------- */
+function openER(){ document.getElementById('erOverlay').classList.add('show'); document.body.style.overflow='hidden'; }
+function closeER(){ document.getElementById('erOverlay').classList.remove('show'); document.body.style.overflow=''; }
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeER(); });
+
+/* ---------- Render acts ---------- */
+function renderActs(){
+  const host = document.getElementById('actsHost');
+  host.innerHTML = '';
+  ACTS.forEach((act, i) => {
+    const total = act.tasks.length;
+    const compl = act.tasks.filter(t=>done[t.id]).length;
+    const pct = Math.round(compl/total*100);
+    const prevComplete = i===0 ? true : ACTS[i-1].tasks.every(t=>done[t.id]);
+
+    const el = document.createElement('div');
+    el.className = 'act';
+    el.innerHTML = `
+      <div class="act-head">
+        <div class="act-num">${act.num}</div>
+        <div style="flex:1">
+          <div class="act-when">Act ${act.num} · ${act.when}</div>
+          <h2 class="act-title">${act.title}</h2>
+        </div>
+        ${ (prevComplete && compl<total && i>0) ? '<span class="ready-chip">You’re ready</span>' : '' }
+      </div>
+      <div class="act-ident">${act.ident}</div>
+      ${ act.locked && !prevComplete ? `<div class="act-locked-note">${act.locked}</div>` : '' }
+      <div class="progress-row"><span class="lbl">${compl} of ${total} done</span><span class="n">${pct}%</span></div>
+      <div class="bar ${i===1?'blue':''}"><i style="width:${pct}%"></i></div>
+      <div style="margin-top:14px" id="tasks-${act.id}"></div>
+    `;
+    host.appendChild(el);
+
+    const tHost = el.querySelector('#tasks-'+act.id);
+    act.tasks.forEach(t=>{
+      const card = document.createElement('div');
+      card.className = 'task' + (done[t.id]?' done':'');
+      card.innerHTML = `
+        <div class="task-top">
+          <div class="chk" role="checkbox" aria-checked="${!!done[t.id]}" tabindex="0">
+            <svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+          </div>
+          <div class="task-body">
+            <p class="task-action">${t.action}</p>
+            <p class="task-why">${t.why}</p>
+            ${ t.habit ? `<div class="habit">🔗 ${t.habit}</div>` : '' }
+            <details class="detail">
+              <summary><span class="tw">▸</span> Why this works / the detail</summary>
+              <div class="dbody">${t.detail}</div>
+            </details>
+          </div>
+        </div>`;
+      const toggle = ()=>toggleTask(t, card);
+      card.querySelector('.chk').addEventListener('click', toggle);
+      card.querySelector('.chk').addEventListener('keydown', e=>{ if(e.key===' '||e.key==='Enter'){e.preventDefault();toggle();} });
+      tHost.appendChild(card);
+    });
+  });
+  renderOverall();
+}
+
+function toggleTask(t, card){
+  const now = !done[t.id];
+  done[t.id] = now;
+  if (!now) delete done[t.id];
+  set(LS.done, done);
+  card.classList.toggle('done', now);
+  card.querySelector('.chk').setAttribute('aria-checked', now);
+
+  if (now && t.badge) awardBadge(t.badge);
+  // Act completion celebration
+  ACTS.forEach(act=>{
+    const complete = act.tasks.every(x=>done[x.id]);
+    if (complete && !celebrated[act.id]){
+      celebrated[act.id]=true; set(LS.actCelebrated, celebrated);
+      if (act.id==='act1') awardBadge('act1');
+      celebrate(`Act ${act.num} complete — ${act.title}. You built the system, not just the outcome.`);
+    }
+  });
+  renderActs();
+}
+
+function renderOverall(){
+  const all = ACTS.flatMap(a=>a.tasks);
+  const c = all.filter(t=>done[t.id]).length;
+  const pct = Math.round(c/all.length*100);
+  document.getElementById('overallBar').style.width = pct+'%';
+  document.getElementById('overallPct').textContent = pct+'%';
+  renderBadges();
+}
+
+/* ---------- Badges ---------- */
+function renderBadges(){
+  const tray = document.getElementById('badgeTray');
+  tray.innerHTML = BADGES.map(b=>`
+    <span class="badge ${badges[b.id]?'earned':''}"><span class="dot">${b.icon}</span>${b.label}</span>`).join('');
+}
+function awardBadge(id){
+  if (badges[id]) return;
+  badges[id]=true; set(LS.badges, badges);
+  const b = BADGES.find(x=>x.id===id);
+  if (b) toast(`Badge earned: <span class="b">${b.icon} ${b.label}</span>`);
+  renderBadges();
+}
+
+/* ---------- Symptom log ---------- */
+function saveLog(){
+  const k = todayKey();
+  const firstEver = Object.keys(logs).length===0;
+  logs[k] = {
+    sev:+document.getElementById('f_sev').value,
+    sleep:+document.getElementById('f_sleep').value,
+    stress:+document.getElementById('f_stress').value,
+    food:document.getElementById('f_food').value.trim(),
+    new:document.getElementById('f_new').value.trim(),
+    notes:document.getElementById('f_notes').value.trim(),
+    ts:k
+  };
+  set(LS.log, logs);
+  if (firstEver) awardBadge('firstlog');
+  const streak = currentStreak();
+  if (streak>=7) awardBadge('week');
+  renderLog();
+  toast('Saved. <span class="b">That’s today done.</span>');
+}
+
+function currentStreak(){
+  let n=0; const d=new Date();
+  for(;;){
+    const key = d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+    if (logs[key]) { n++; d.setDate(d.getDate()-1); }
+    else break;
+  }
+  // allow today to be un-logged without breaking yesterday's streak count
+  if (n===0){
+    const y=new Date(); y.setDate(y.getDate()-1);
+    const yk = y.getFullYear()+'-'+String(y.getMonth()+1).padStart(2,'0')+'-'+String(y.getDate()).padStart(2,'0');
+    if (logs[yk]){ let m=0; const dd=new Date(); dd.setDate(dd.getDate()-1);
+      for(;;){ const key=dd.getFullYear()+'-'+String(dd.getMonth()+1).padStart(2,'0')+'-'+String(dd.getDate()).padStart(2,'0');
+        if(logs[key]){m++;dd.setDate(dd.getDate()-1);}else break; } return m; }
+  }
+  return n;
+}
+function bestStreak(){
+  const keys = Object.keys(logs).sort();
+  let best=0, run=0, prev=null;
+  keys.forEach(k=>{
+    const d=new Date(k+'T00:00:00');
+    if (prev && (d-prev)===86400000) run++; else run=1;
+    best=Math.max(best,run); prev=d;
+  });
+  return best;
+}
+
+function sevColor(v){ return v<=3?'var(--good)': v<=6?'var(--mid)':'var(--high)'; }
+
+function renderLog(){
+  const streak = currentStreak();
+  document.getElementById('streakNum').textContent = streak;
+  document.getElementById('streakWord').textContent = streak===1?'day logged':'days logged';
+  document.getElementById('streakBest').textContent = `Most ever: ${bestStreak()} · Total entries: ${Object.keys(logs).length}`;
+
+  // 7-day strip
+  const strip = document.getElementById('strip');
+  strip.innerHTML='';
+  const labels=['Su','Mo','Tu','We','Th','Fr','Sa'];
+  let loggedThisWeek=0;
+  for(let i=6;i>=0;i--){
+    const d=new Date(); d.setDate(d.getDate()-i);
+    const key=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+    const entry=logs[key];
+    if(entry) loggedThisWeek++;
+    const h = entry ? Math.max(12, entry.sev*10) : 0;
+    const cell=document.createElement('div');
+    cell.className='day'+(i===0?' today':'');
+    cell.innerHTML=`
+      <div class="bar7"><i style="height:${h}%; background:${entry?sevColor(entry.sev):'transparent'}"></i></div>
+      <div class="dnum">${entry?entry.sev:'·'}</div>
+      <div class="dlabel">${labels[d.getDay()]}</div>`;
+    strip.appendChild(cell);
+  }
+  document.getElementById('weekHint').textContent = `${loggedThisWeek}/7 logged`;
+
+  // Prefill today's entry if it exists
+  const t=logs[todayKey()];
+  document.getElementById('logTitle').textContent = t? 'Update today' : 'Log today';
+  if(t){
+    document.getElementById('f_sev').value=t.sev; document.getElementById('v_sev').textContent=t.sev;
+    document.getElementById('f_sleep').value=t.sleep; document.getElementById('v_sleep').textContent=t.sleep;
+    document.getElementById('f_stress').value=t.stress; document.getElementById('v_stress').textContent=t.stress;
+    document.getElementById('f_food').value=t.food||''; document.getElementById('f_new').value=t.new||'';
+    document.getElementById('f_notes').value=t.notes||'';
+  }
+}
+
+/* ---------- Backup ---------- */
+function exportData(){
+  const payload = { exported: todayKey(), done, badges, logs, celebrated };
+  const blob = new Blob([JSON.stringify(payload,null,2)], {type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=`mcas-companion-backup-${todayKey()}.json`;
+  a.click(); URL.revokeObjectURL(a.href);
+  toast('Backup downloaded. <span class="b">Keep it somewhere safe.</span>');
+}
+function importData(input){
+  const file=input.files[0]; if(!file) return;
+  const r=new FileReader();
+  r.onload=()=>{
+    try{
+      const d=JSON.parse(r.result);
+      if(d.done){done=d.done; set(LS.done,done);}
+      if(d.badges){badges=d.badges; set(LS.badges,badges);}
+      if(d.logs){logs=d.logs; set(LS.log,logs);}
+      if(d.celebrated){celebrated=d.celebrated; set(LS.actCelebrated,celebrated);}
+      renderActs(); renderLog();
+      toast('Backup restored. <span class="b">Welcome back.</span>');
+    }catch(e){ toast('Couldn’t read that file.'); }
+  };
+  r.readAsText(file); input.value='';
+}
+
+/* ---------- Toast + confetti ---------- */
+let toastTimer;
+function toast(html){
+  const t=document.getElementById('toast'); t.innerHTML=html; t.classList.add('show');
+  clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('show'),3200);
+}
+function celebrate(msg){
+  toast(msg);
+  const host=document.getElementById('confetti');
+  const colors=['#3f8576','#6fb3a2','#557ea3','#c9962e','#9fe0cf'];
+  for(let i=0;i<26;i++){
+    const c=document.createElement('div'); c.className='conf';
+    c.style.left=Math.random()*100+'vw';
+    c.style.background=colors[i%colors.length];
+    const dur=2.6+Math.random()*1.4;
+    c.style.animation=`drop ${dur}s cubic-bezier(.3,.6,.4,1) forwards`;
+    c.style.transform=`translateY(0) rotate(${Math.random()*360}deg)`;
+    c.style.opacity=0.9;
+    host.appendChild(c);
+    setTimeout(()=>c.remove(), dur*1000+200);
+  }
+}
+
+/* ---------- Boot ---------- */
+renderActs();
+renderLog();
+</script>
+</body>
+</html>
